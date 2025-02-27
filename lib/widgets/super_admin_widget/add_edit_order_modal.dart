@@ -406,11 +406,18 @@ Widget _buildStyledTextField(
       controller: controller,
       enabled: enabled,
       readOnly: isDateField, // Make it read-only if it's a date field
+        style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white // Use dark theme color
+                  : Colors.grey,
+              fontWeight: FontWeight.w500),
         filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400] // Use dark theme color
+              : Colors.grey[300],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide.none,
@@ -459,9 +466,15 @@ Widget _buildStyledTextField(
         value: value,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white // Use dark theme color
+                  : Colors.grey,
+              fontWeight: FontWeight.w500),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400] // Use dark theme color
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,
@@ -480,6 +493,23 @@ Widget _buildStyledTextField(
         ),
         items: items,
         onChanged: onChanged,
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey // Grey text in dark mode
+              : Colors.black, // Black text in light mode
+        ),
+        hint: Text(
+          "Select $label",
+          style: TextStyle(
+            color: Colors.grey, // Ensure hint text is grey in both modes
+          ),
+        ),
+        icon: Icon(
+          Icons.arrow_drop_down, // Default dropdown arrow icon
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white // Grey arrow in dark mode
+              : Colors.black, // Black arrow in light mode
+        ),
         validator: (value) {
 
           if (label == 'Status') {
@@ -509,6 +539,7 @@ Widget _buildBottleRow(int index) {
           Expanded(
             child: TextFormField(
               initialValue: bottles[index]['NumberOfLiters'].toString(),
+                style: const TextStyle(color: Colors.black),
               decoration: _bottleFieldDecoration("Liters"),
               keyboardType: TextInputType.number,
               onChanged: (value) {
@@ -523,6 +554,7 @@ Widget _buildBottleRow(int index) {
         Expanded(
           child: TextFormField(
             initialValue: bottles[index]['NumberOfBottles'].toString(),
+              style: const TextStyle(color: Colors.black),
             decoration: _bottleFieldDecoration("Bottles"),
             keyboardType: TextInputType.number,
             onChanged: (value) {
@@ -545,6 +577,11 @@ Widget _buildBottleRow(int index) {
 InputDecoration _bottleFieldDecoration(String label) {
   return InputDecoration(
     labelText: label,
+      labelStyle: TextStyle(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey // Use dark theme color
+            : Colors.grey,
+      ),  
     contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
     border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
     filled: true,
@@ -568,6 +605,7 @@ Widget build(BuildContext context) {
     }
 
   return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
     appBar: AppBar(
       title: Text(widget.isEditing ? "Edit Order" : "Add Order"),
       leading: IconButton(
@@ -700,14 +738,18 @@ Widget build(BuildContext context) {
                   height: 40.0,
                   child: ElevatedButton(
                     onPressed: _submitOrder,
-                    child: Text(widget.isEditing ? 'Save Changes' : 'Add Order'),
+                      child: Text(
+                        widget.isEditing ? 'Save Changes' : 'Add Order',
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        textStyle: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

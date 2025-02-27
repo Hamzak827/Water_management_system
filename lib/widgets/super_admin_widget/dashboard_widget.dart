@@ -1,13 +1,16 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:water_management_system/navigation/sidebar.dart';
 import 'package:water_management_system/providers/theme_provider.dart';
 import 'package:water_management_system/services/auth_service.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:intl/intl.dart'; // Import for DateFormat
+
 import 'package:water_management_system/providers/auth_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -353,91 +356,164 @@ List<BarChartGroupData> _buildChartData() {
           },
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Lifetime Statistics
-                    Text('Lifetime Statistics', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 16),
-                    GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 2 / 1.5,
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Shimmer.fromColors(
+                  baseColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]! // Dark grey for dark mode
+                      : Colors.grey[300]!, // Light grey for light mode
+                  highlightColor: Theme.of(context).brightness ==
+                          Brightness.dark
+                      ? Colors.grey[
+                          700]! // Slightly lighter dark grey for dark mode
+                      : Colors
+                          .grey[100]!, // Slightly lighter grey for light mode
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Lifetime Statistics
+                      SizedBox(
+                        height: 10,
                       ),
-                      itemCount: 3,
-                      itemBuilder: (context, index) => buildShimmerCard(),
-                    ),
-                    SizedBox(height: 32),
+                      Text('Lifetime Statistics',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 20),
 
-                    // Order Status Distribution
-                    Text('Order Status Distribution', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 16),
-                    Container(height: 200, color: Colors.grey[300]), // Placeholder for the Pie Chart
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildShimmerLegend(),
-                          _buildShimmerLegend(),
-                          _buildShimmerLegend(),
-                          _buildShimmerLegend(),
-                        ],
+                      // Column with three rows (replaces the grid)
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 14),
+                        child: Column(
+                          children: List.generate(
+                              3, (index) => _buildShimmerRow(context)),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 32),
 
-                    // Current Range Statistics
-                    Text('Current Range Statistics', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 16),
-                    GridView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: 2 / 1.5,
-                      ),
-                      itemCount: 6,
-                      itemBuilder: (context, index) => buildShimmerCard(),
-                    ),
-                    SizedBox(height: 32),
+                      SizedBox(height: 16),
 
-                    // Statistics Trends
-                    Text('Statistics Trends', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Wrap(
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children: List.generate(6, (_) => _buildShimmerLegend()),
+                      // Order Status Distribution
+                      Text('Order Status Distribution',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 16),
+
+                      // Row with two columns (pie chart and legends)
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.grey.shade100,
+                              Color.fromARGB(255, 218, 217, 217)
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            stops: [0.1, 0.9],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color.fromARGB(255, 41, 42, 42),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 68, 68, 68)
+                                  .withOpacity(0.3),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            // Legends Column
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildShimmerLegend(),
+                                  _buildShimmerLegend(),
+                                  _buildShimmerLegend(),
+                                  _buildShimmerLegend(),
+                                ],
+                              ),
+                            ),
+                            // Pie Chart Placeholder
+                            Expanded(
+                              flex: 3,
+                              child: Container(
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300], // Placeholder color
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 32),
-                    Container(
-                      height: 250,
-                      color: Colors.grey[300], // Placeholder for Bar Chart
-                    ),
-                  ],
+                      SizedBox(height: 32),
+
+                      // Current Range Statistics
+                      Text('Current Range Statistics',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 16),
+
+                      // Grid with 6 items
+                      GridView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 2 / 1.5,
+                        ),
+                        itemCount: 6,
+                        itemBuilder: (context, index) =>
+                            _buildShimmerCard(context),
+                      ),
+                      SizedBox(height: 32),
+
+                      // Statistics Trends
+                      Text('Statistics Trends',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 16),
+
+                      // Legends for Statistics Trends
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Wrap(
+                          spacing: 8.0,
+                          runSpacing: 4.0,
+                          children:
+                              List.generate(6, (_) => _buildShimmerLegend()),
+                        ),
+                      ),
+                      SizedBox(height: 32),
+
+                      // Bar Chart Placeholder
+                      Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300], // Placeholder color
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+)
       );
     }
 
@@ -553,8 +629,7 @@ List<BarChartGroupData> _buildChartData() {
         role: widget.role,
         onMenuItemClicked: (route) {
           Navigator.pushNamed(context, route);
-          iconColor:
-          Colors.white; 
+          
         },
         
       ),
@@ -620,7 +695,7 @@ List<BarChartGroupData> _buildChartData() {
                               filter,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.black87,
+                                //color: Colors.black87,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -1020,12 +1095,32 @@ List<BarChartGroupData> _buildChartData() {
 
 
 
-  Widget buildShimmerCard() {
-    return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
-      child: Container(
-        color: Colors.grey,
+  Widget _buildShimmerCard(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[800]! // Darker grey for dark mode
+            : Colors.grey[200]!, // Lighter grey for light mode
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              height: 15,
+              color: Colors.grey[400], // Placeholder color
+            ),
+            SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              height: 15,
+              color: Colors.grey[400], // Placeholder color
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1266,25 +1361,56 @@ Widget _buildLegends(BuildContext context, String label, Color color) {
   );
 }
 
-
+Widget _buildShimmerRow(BuildContext context) {
+  return Container(
+    margin: EdgeInsets.only(bottom: 16),
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[800]! // Darker grey for dark mode
+          : Colors.grey[200]!, // Lighter grey for light mode
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Row(
+      children: [
+        // Placeholder for an icon or image
+        Container(
+          width: 40,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.grey[400], // Placeholder color
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        SizedBox(width: 16),
+        // Placeholder for text
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                height: 15,
+                color: Colors.grey[400], // Placeholder color
+              ),
+              SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                height: 15,
+                color: Colors.grey[400], // Placeholder color
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
 Widget _buildShimmerLegend() {
-  return Row(
-    children: [
-      Container(
-        width: 16,
-        height: 16,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          shape: BoxShape.circle,
-        ),
-      ),
-      SizedBox(width: 8),
-      Container(
-        width: 100,
-        height: 16,
-        color: Colors.grey[300],
-      ),
-    ],
+  return Container(
+    width: 120,
+    height: 15,
+    color: Colors.grey[400], // Placeholder color
   );
 }

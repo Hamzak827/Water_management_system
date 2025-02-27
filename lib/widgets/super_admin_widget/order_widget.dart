@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:water_management_system/navigation/sidebar.dart';
 import 'package:water_management_system/providers/auth_provider.dart';
 import 'package:water_management_system/services/auth_service.dart';
+import 'package:water_management_system/themes/app_themes.dart';
 import 'package:water_management_system/widgets/super_admin_widget/add_edit_deliveryboy_modal.dart';
 import 'package:water_management_system/widgets/super_admin_widget/add_edit_order_modal.dart';
 import 'package:water_management_system/widgets/super_admin_widget/order_preview_modal.dart';
@@ -148,8 +149,33 @@ final totalItems = _searchQuery.isEmpty
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(
               padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
-                child: Shimmer.fromColors(
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        hintText: 'Search by name, order ID, or status...',
+                        hintStyle: GoogleFonts.lato(
+                            fontSize: 16, color: Colors.black54),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      onChanged: _filterOrders,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
                   child: Column(
@@ -164,8 +190,12 @@ final totalItems = _searchQuery.isEmpty
                       );
                     }),
                   ),
-                ),
-              ),
+                        ),
+                      ),
+                    )
+                  ],
+                )
+             
             );
           } else if (snapshot.hasError) {
             return const Center(child: Text('No orders found.'));
@@ -183,12 +213,13 @@ final totalItems = _searchQuery.isEmpty
   padding: const EdgeInsets.all(12.0),
   child: TextField(
     controller: _searchController,
+                    style: const TextStyle(color: Colors.black),
     decoration: InputDecoration(
       hintText: 'Search by name, order ID, or status...',
                       hintStyle:
                           GoogleFonts.lato(fontSize: 16, color: Colors.black54),
     
-      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(Icons.search, color: Colors.grey),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
       ),
@@ -219,18 +250,23 @@ bool shouldHideEditButton = widget.role == 'admin' &&
      
                       return Container(
                         
+                        
   margin: const EdgeInsets.only(bottom: 10),
   decoration: BoxDecoration(
     borderRadius: BorderRadius.circular(10),
+                          color: Theme.of(context).colorScheme.surface, //
     border: Border(
-      top: BorderSide(color: Colors.black, width: 1),  // Normal border on top
-      left: BorderSide(color: Colors.black, width: 1), // Normal border on left
+                            top: BorderSide(
+                                color: Colors.grey, width: 1), // Top border
+                            left: BorderSide(
+                                color: Colors
+                                    .grey, // Uses the theme's default border color
+
+                                width: 1), // Left border
                             right: BorderSide(
-                                color: Colors.black,
-                                width:
-                                    2), // Thicker border on the right for 3D effect
+                                color: Colors.grey, width: 2), // Right border
                             bottom: BorderSide(
-                                color: Colors.black,
+                                color: Colors.grey,
                                 width:
                                     2), // Thicker border on the bottom for 3D effect
     ),
@@ -244,7 +280,7 @@ bool shouldHideEditButton = widget.role == 'admin' &&
     ],
   ),
   child:Card(
-  color:  Color(0xFFFCFCF7),
+  
   margin: EdgeInsets.zero, // No additional margin here as we handle it in the outer container
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10),
@@ -266,7 +302,7 @@ bool shouldHideEditButton = widget.role == 'admin' &&
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 22,
-                  color: Colors.black87,
+                                          // color: Colors.black87,
                 ),
               ),
             ),
@@ -288,7 +324,7 @@ Padding(
         "Status: ",
         style: GoogleFonts.sourceCodePro(
           fontSize: 14,
-          color: Colors.black87,
+                                              // color: Colors.black87,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -339,12 +375,17 @@ Padding(
               children: [
                 Text(
                   "Name: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
+                                            style: GoogleFonts.sourceCodePro(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600),
                 ),
                 Expanded(
                   child: Text(
                     customer['CustomerID']?['Name'] ?? 'N/A',
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  color: Color.fromARGB(
+                                                      255, 196, 196, 191)),
                   ),
                 ),
               ],
@@ -361,12 +402,17 @@ Padding(
               children: [
                 Text(
                   "Delivery Boy: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
+                                            style: GoogleFonts.sourceCodePro(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600),
                 ),
                 Expanded(
                   child: Text(
                     customer['DeliveryBoyID']?['Name'].toString() ?? 'N/A',
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  color: Color.fromARGB(
+                                                      255, 196, 196, 191)),
                   ),
                 ),
               ],
@@ -382,12 +428,17 @@ Padding(
               children: [
                 Text(
                   "Delivery Date: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
+                                            style: GoogleFonts.sourceCodePro(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600),
                 ),
                 Expanded(
                   child: Text(
                     _formatDate(customer['DeliveryDate']) ?? 'N/A',
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  color: Color.fromARGB(
+                                                      255, 196, 196, 191)),
                   ),
                 ),
               ],
@@ -404,13 +455,18 @@ Padding(
               children: [
                 Text(
                   "Updated At: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
+                                            style: GoogleFonts.sourceCodePro(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600),
                 ),
                 Expanded(
                   child: Text(
                    
                      _formatDate(customer['updated_at']) ?? 'N/A',
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  color: Color.fromARGB(
+                                                      255, 196, 196, 191)),
                   ),
                 ),
               ],
@@ -663,21 +719,30 @@ Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                             decoration: BoxDecoration(
                               color: _currentPage == pageToShow
-                                  ? Colors.blue
-                                  : Colors.transparent,
+                                                  ? Theme.of(context)
+                                                      .primaryColor
+                                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(8.0),
                               border: Border.all(
-                                color: _currentPage == pageToShow
-                                    ? Colors.blue
-                                    : Colors.grey.withOpacity(0.5),
+                                                color:
+                                                    _currentPage == pageToShow
+                                                        ? Theme.of(context)
+                                                            .primaryColor
+                                                        : Theme.of(context)
+                                                            .dividerColor,
+                                    
                               ),
                             ),
                             child: Text(
                               (pageToShow + 1).toString(),
                               style: TextStyle(
                                 color: _currentPage == pageToShow
-                                    ? Colors.white
-                                    : Colors.black,
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary
+                                                        : Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface,
                               ),
                             ),
                           ),
@@ -731,6 +796,7 @@ Padding(
   child: Padding(
     padding: const EdgeInsets.only(bottom: 30), // Adjust for upward movement
     child: FloatingActionButton(
+            backgroundColor: Colors.blue,
       tooltip: 'Add New Order',
       onPressed: () async {
         final result = await showDialog(
@@ -743,7 +809,7 @@ Padding(
           _fetchOrder();
         }
       },
-      child: const Icon(Icons.add),
+            child: const Icon(Icons.add, color: Colors.white),
     ),
   ),
 ),

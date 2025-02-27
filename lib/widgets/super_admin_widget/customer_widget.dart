@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:water_management_system/navigation/sidebar.dart';
 import 'package:water_management_system/providers/auth_provider.dart';
+import 'package:water_management_system/providers/theme_provider.dart';
 
 import 'package:water_management_system/services/auth_service.dart';
+import 'package:water_management_system/themes/app_themes.dart';
 import 'package:water_management_system/widgets/super_admin_widget/add_edit_customer_modal.dart';
 
 class CustomerScreen extends StatefulWidget {
@@ -109,26 +111,72 @@ class _CustomerScreenState extends State<CustomerScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(
-              padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Column(
-                    children: List.generate(4, (index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 150,
-                          color: Colors.white,
-                        ),
-                      );
-                    }),
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  // Search Bar
+                  TextField(
+                    controller: _searchController,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: 'Search by name, email, or phone...',
+                      hintStyle:
+                          GoogleFonts.lato(fontSize: 16, color: Colors.black54),
+                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    onChanged: _filterCustomers,
                   ),
-                ),
+
+                  const SizedBox(
+                      height: 10), // Spacing between search bar and list
+
+                  // Scrollable Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Shimmer.fromColors(
+                        baseColor: Theme.of(context).brightness ==
+                                Brightness.dark
+                            ? Colors.grey[800]! // Dark grey for dark mode
+                            : Colors.grey[300]!, // Light grey for light mode
+                        highlightColor: Theme.of(context).brightness ==
+                                Brightness.dark
+                            ? Colors.grey[
+                                700]! // Slightly lighter dark grey for dark mode
+                            : Colors.grey[
+                                100]!, // Slightly lighter grey for light mode
+                        child: Column(
+                          children: List.generate(4, (index) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Container(
+                                width: double.infinity,
+                                height: 250,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey[
+                                          900]! // Dark background for dark mode
+                                      : Colors.white,
+                                ),
+                                // White background for light mode
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
-            );
+);
+
           } else if (snapshot.hasError) {
             return const Center(child: Text('No customers found.'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -164,51 +212,30 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     itemBuilder: (context, index) {
                       final customer = paginatedDeliveryboys[index];
 
+                  
                       return Container(
+                          // Force rebuild
                           margin: const EdgeInsets.only(bottom: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            
-                            gradient: LinearGradient(
-                              colors: [
-                                // Color(0xFF00C6FB), // Light blue
-                                // Color(0xFF005BEA), // Reddish shade
-                                // Light blue
-                                Color(0xFF7FCEC5),
-                                Color(0xFF14557B),
-                              ],
-                              begin: Alignment.bottomLeft,
-                              end: Alignment.topRight,
-                            ),
+                        
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surface, // Use light background color
+
                             border: Border(
                               top: BorderSide(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white // Use dark theme color
-                                    : Colors.black,
-                                width: 1,
-                              ),
+                                  color: Colors.grey, width: 1), // Top border
                               left: BorderSide(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white // Use dark theme color
-                                    : Colors.black,
-                                width: 1,
-                              ),
+                                  color: Colors
+                                      .grey, // Uses the theme's default border color
+
+                                  width: 1), // Left border
                               right: BorderSide(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white // Use dark theme color
-                                    : Colors.black,
-                                width: 2,
-                              ),
+                                  color: Colors.grey, width: 2), // Right border
                               bottom: BorderSide(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white // Use dark theme color
-                                    : Colors.black,
-                                width: 2,
-                              ),
+                                  color: Colors.grey,
+                                  width: 2), // Bottom border
                             ),
                             boxShadow: [
                               BoxShadow(
@@ -220,12 +247,17 @@ class _CustomerScreenState extends State<CustomerScreen> {
                             ],
                           ),
                           child: Card(
-                            color: Colors.transparent,
-                            // color: Theme.of(context).colorScheme.onBackground,
+                           
+                            // Card color adapts to theme
                             margin: EdgeInsets
                                 .zero, // No additional margin here as we handle it in the outer container
                             shape: RoundedRectangleBorder(
+                              
                               borderRadius: BorderRadius.circular(10),
+                              // side: BorderSide(
+                              //     // Border thickness
+                              //     ),
+                              
                             ),
                             elevation:
                                 0, // We don't need the card's internal shadow since we are using BoxShadow
@@ -245,7 +277,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                           style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 22,
-                                            color: Colors.black87,
+                                           
                                           ),
                                         ),
                                       ),
@@ -270,7 +302,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                               "Email: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                  //color: Colors.black87,
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -302,7 +334,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                               "Phone: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                  //color: Colors.black87,
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -337,7 +369,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                               "Remaining Balance: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                  //color: Colors.black87,
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -369,7 +401,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                               "Remaining Bottles: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                  //color: Colors.black87,
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -403,7 +435,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                               "Price Per Liter: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                  //color: Colors.black87,
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -434,7 +466,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                                               "Price Per Bottle: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                  //color: Colors.black87,
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -622,6 +654,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
                               ),
                             ),
                           ));
+                    
+                     
+                    
                     },
                   ),
                 ),

@@ -458,6 +458,7 @@ Widget _buildAddressRow(int index) {
             height: null, // Let it expand based on content size
             child: TextFormField(
               initialValue: address['AddressLine'].toString(),
+              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "Address Line",
                 labelStyle: TextStyle(
@@ -495,6 +496,7 @@ Widget _buildAddressRow(int index) {
                   height: null,
                   child: TextFormField(
                     initialValue: address['City'].toString(),
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       labelText: "City",
                       labelStyle: TextStyle(
@@ -525,6 +527,7 @@ Widget _buildAddressRow(int index) {
                   height: null,
                   child: TextFormField(
                     initialValue: address['PostalCode'].toString(),
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       labelText: "Postal Code",
                       labelStyle: TextStyle(
@@ -558,6 +561,7 @@ Widget _buildAddressRow(int index) {
             height: null,
             child: TextFormField(
               initialValue: address['Country'].toString(),
+              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "Country",
                 labelStyle: TextStyle(
@@ -605,6 +609,7 @@ Widget build(BuildContext context) {
         Navigator.pop(context, true);
         return Future.value(false); // Prevents default back button behavior
       },child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
     appBar: AppBar(
       title: Text(widget.isEditing ? "Edit Customer" : "Add Customer"),
       leading: IconButton(
@@ -760,8 +765,9 @@ Widget _buildStyledTextField(TextEditingController controller, String label,
               labelText: label,
               labelStyle: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.grey,
+                      ? Colors.white
+                      : Colors.grey,
+                  fontWeight: FontWeight.w500
               ),
               filled: true,
               fillColor: Theme.of(context).brightness == Brightness.dark
