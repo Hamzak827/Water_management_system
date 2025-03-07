@@ -238,11 +238,18 @@ if (success) {
         controller: controller,
         enabled: enabled,
         readOnly: isDateField,
+        style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,
@@ -285,9 +292,16 @@ if (success) {
         value: value,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,
@@ -306,6 +320,8 @@ if (success) {
         ),
         items: items,
         onChanged: onChanged,
+        style: const TextStyle(
+            color: Colors.black), // Ensures selected text is black
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please select a $label';
@@ -340,6 +356,9 @@ if (success) {
                 if (isLoading)
                   CircularProgressIndicator()
                 else ...[
+                  SizedBox(
+                    height: 20,
+                  ),
                   _buildStyledDropdown(
                     label: 'Address',
                     value: selectedAddressId,
@@ -358,13 +377,19 @@ if (success) {
                   ),
                   _buildStyledTextField(_deliveryDateController, 'Delivery Date', isDateField: true),
                   _buildStyledTextField(_bottlesController, 'Number of Bottles', isNumeric: true),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Center(
                     child: SizedBox(
                       width: 130.0, // Set your desired width
                       height: 40.0,
                       child: ElevatedButton(
                         onPressed: _submitOrder,
-                        child: Text(widget.isEditing ?'Edit Order':'Add Order'),
+                        child: Text(
+                          widget.isEditing ? 'Edit Order' : 'Add Order',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),

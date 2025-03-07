@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -28,16 +29,34 @@ class AuthService {
       final token = data['token']; // Replace with the actual key for the token
       // final deliveryBoyId=data['DeliveryBoyID'].toString();
       // final customerId=data['Profile']['CustomerID'].toString();
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
       final String? deliveryBoyId = data['DeliveryBoyID']?.toString();
       final String? customerId = data['Profile']?['CustomerID']?.toString();
+        final String? fcmToken = await messaging.getToken();
+      
 
       await _storage.write(key: 'authToken', value: token); // Save token securely
       await _storage.write(key: 'deliveryboyId',value: deliveryBoyId);
       await _storage.write(key: 'customerId',value: customerId);
+        await _storage.write(key: 'fcmToken', value: fcmToken);
 
       // Debug: Log the token and the response data
       print('Login successful, token: $token');
       print('Response data: $data');
+
+        // **Determine Role**
+        String? role;
+        if (customerId != null) {
+          role = 'customer';
+        } else if (deliveryBoyId != null) {
+          role = 'deliveryboy';
+        }
+
+// **Send FCM Token to the server**
+        if (fcmToken != null) {
+          await sendDeviceTokenToServer(
+              token, role, customerId, deliveryBoyId, fcmToken);
+        }
 
       return data; // Return user data
     } else if (response.statusCode == 401) {
@@ -59,6 +78,49 @@ class AuthService {
     throw Exception('$e');
   }
 }
+
+Future<void> sendDeviceTokenToServer(
+    String authToken,
+    String? role,
+    String? customerId,
+    String? deliveryBoyId,
+    String fcmToken,
+  ) async {
+    String? url;
+
+    if (role == 'customer' && customerId != null) {
+      url = '$baseUrl/customers/$customerId/deviceToken';
+    } else if (role == 'deliveryboy' && deliveryBoyId != null) {
+      url = '$baseUrl/delieveryboy/$deliveryBoyId/deviceToken';
+    }
+
+    if (url != null) {
+      try {
+        final response = await http.post(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization':
+                'Bearer $authToken', // Use the token for authentication
+          },
+          body: json.encode({'deviceToken': fcmToken}),
+        );
+        print('Response status: ${response.statusCode}');
+        print("URL being called for fcm: $url");
+
+        if (response.statusCode == 200) {
+          print("Device token successfully sent to the server.");
+        } else {
+          print("Failed to send device token. Response: ${response.body}");
+        }
+      } catch (e) {
+        print("Error sending device token: $e");
+      }
+    } else {
+      print("No valid role or ID found for sending device token.");
+    }
+  }
+
 
 
   

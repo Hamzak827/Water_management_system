@@ -134,24 +134,65 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(
               padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
+              child: Column(children: [
+                TextField(
+                  controller: _searchController,
+                  style: const TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    hintText: 'Search by name, order ID, or status...',
+                    hintStyle:
+                        GoogleFonts.lato(fontSize: 16, color: Colors.black54),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  onChanged: _filterDeliveryBoyOrders,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
                 child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
+                      baseColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[800]! // Dark grey for dark mode
+                          : Colors.grey[300]!, // Light grey for light mode
+                      highlightColor: Theme.of(context).brightness ==
+                              Brightness.dark
+                          ? Colors.grey[
+                              700]! // Slightly lighter dark grey for dark mode
+                          : Colors.grey[
+                              100]!, // Slightly lighter grey for light mode
                   child: Column(
                     children: List.generate(4, (index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Container(
                           width: double.infinity,
-                          height: 150,
-                          color: Colors.white,
+                              height: 230,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.grey[
+                                        900]! // Dark background for dark mode
+                                    : Colors.white,
+                              ),
+                              // White background for light mode
                         ),
                       );
                     }),
                   ),
                 ),
-              ),
+                  ),
+                )
+              ]),
             );
           } else if (snapshot.hasError) {
             return const Center(child: Text('No orders found.'));
@@ -166,12 +207,16 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                   padding: const EdgeInsets.all(12.0),
                   child: TextField(
                     controller: _searchController,
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       hintText: 'Search by name, order ID, or status...',
                       hintStyle:
                           GoogleFonts.lato(fontSize: 16, color: Colors.black54),
       
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.grey,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -195,19 +240,18 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border(
                               top: BorderSide(
-                                  color: Colors.black,
-                                  width: 1), // Normal border on top
+                                  color: Colors.grey, width: 1), // Top border
                               left: BorderSide(
-                                  color: Colors.black,
-                                  width: 1), // Normal border on left
+                                  color: Colors
+                                      .grey, // Uses the theme's default border color
+
+                                  width: 1), // Left border
                               right: BorderSide(
-                                  color: Colors.black,
-                                  width:
-                                      2), // Thicker border on the right for 3D effect
+                                  color: Colors.grey, width: 2), // Right border
                               bottom: BorderSide(
-                                  color: Colors.black,
+                                  color: Colors.grey,
                                   width:
-                                      2), // Thicker border on the bottom for 3D effect
+                                      2), // Thicker border on the bottom for 3D effect // Thicker border on the bottom for 3D effect
                             ),
                             boxShadow: [
                               BoxShadow(
@@ -219,7 +263,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                             ],
                           ),
                           child: Card(
-                            color: Color(0xFFFCFCF7),
+                            
                             margin: EdgeInsets
                                 .zero, // No additional margin here as we handle it in the outer container
                             shape: RoundedRectangleBorder(
@@ -243,7 +287,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                           style: GoogleFonts.poppins(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 22,
-                                            color: Colors.black87,
+                                           
                                           ),
                                         ),
                                       ),
@@ -269,7 +313,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                               "Status: ",
                                               style: GoogleFonts.sourceCodePro(
                                                 fontSize: 14,
-                                                color: Colors.black87,
+                                               
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
@@ -415,7 +459,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                               "Name: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                 
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -426,7 +470,11 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                                 style:
                                                     GoogleFonts.sourceCodePro(
                                                         fontSize: 14,
-                                                        color: Colors.black54),
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            196,
+                                                            196,
+                                                            191)),
                                               ),
                                             ),
                                           ],
@@ -445,7 +493,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                               "Delivery Date: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                 
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -456,7 +504,11 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                                 style:
                                                     GoogleFonts.sourceCodePro(
                                                         fontSize: 14,
-                                                        color: Colors.black54),
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            196,
+                                                            196,
+                                                            191)),
                                               ),
                                             ),
                                           ],
@@ -474,7 +526,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                               "Updated At: ",
                                               style: GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black87,
+                                                 
                                                   fontWeight: FontWeight.w600),
                                             ),
                                             Expanded(
@@ -485,7 +537,11 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                                 style:
                                                     GoogleFonts.sourceCodePro(
                                                         fontSize: 14,
-                                                        color: Colors.black54),
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            196,
+                                                            196,
+                                                            191)),
                                               ),
                                             ),
                                           ],
@@ -503,7 +559,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                               "Order Comment: ",
                                               style: GoogleFonts.sourceCodePro(
                                                 fontSize: 14,
-                                                color: Colors.black87,
+                                               
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
@@ -514,7 +570,8 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                                 style:
                                                     GoogleFonts.sourceCodePro(
                                                   fontSize: 14,
-                                                  color: Colors.black54,
+                                                  color: Color.fromARGB(
+                                                      255, 196, 196, 191),
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                                 overflow: TextOverflow
@@ -664,16 +721,18 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                                 vertical: 4.0, horizontal: 8.0),
                                             decoration: BoxDecoration(
                                               color: _currentPage == pageToShow
-                                                  ? Colors.blue
+                                                  ? Theme.of(context)
+                                                      .primaryColor
                                                   : Colors.transparent,
                                               borderRadius:
                                                   BorderRadius.circular(8.0),
                                               border: Border.all(
                                                 color:
                                                     _currentPage == pageToShow
-                                                        ? Colors.blue
-                                                        : Colors.grey
-                                                            .withOpacity(0.5),
+                                                        ? Theme.of(context)
+                                                            .primaryColor
+                                                        : Theme.of(context)
+                                                            .dividerColor,
                                               ),
                                             ),
                                             child: Text(
@@ -681,8 +740,12 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                                               style: TextStyle(
                                                 color:
                                                     _currentPage == pageToShow
-                                                        ? Colors.white
-                                                        : Colors.black,
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary
+                                                        : Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface,
                                               ),
                                             ),
                                           ),
@@ -735,6 +798,7 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
           padding:
               const EdgeInsets.only(bottom: 30), // Adjust for upward movement
           child: FloatingActionButton(
+            backgroundColor: Colors.blue,
             tooltip: 'Add New Order',
             onPressed: () async {
               final result = await showDialog(
@@ -747,7 +811,10 @@ class _DeliveryboyOrderScreenState extends State<DeliveryboyOrderScreen> {
                 _fetchDeliveryboyOrder();
               }
             },
-            child: const Icon(Icons.add),
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

@@ -129,6 +129,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                       filled: true,
                       fillColor: Colors.white,
                     ),
+                    
                     onChanged: _filterCustomers,
                   ),
 
@@ -219,9 +220,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                         
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surface, // Use light background color
+                            // color: Theme.of(context)
+                            //     .colorScheme
+                            //     .surface, // Use light background color
 
                             border: Border(
                               top: BorderSide(

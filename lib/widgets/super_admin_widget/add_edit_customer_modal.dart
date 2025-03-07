@@ -388,6 +388,7 @@ Widget _buildStyledDropdown({
             color: Theme.of(context).brightness == Brightness.dark
                 ? Colors.white // Use dark theme color
                 : Colors.grey,
+              fontWeight: FontWeight.w700
           ), // Label color remains grey
         filled: true,
           fillColor: Theme.of(context).brightness == Brightness.dark
@@ -462,17 +463,20 @@ Widget _buildAddressRow(int index) {
               decoration: InputDecoration(
                 labelText: "Address Line",
                 labelStyle: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey // Use dark theme color
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
                       : Colors.grey,
-                ),  
+                    fontWeight: FontWeight.w700
+              ),
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400] // Use dark theme color
+                    : Colors.grey[300], //
               ),
               maxLines: null, // Allows multiple lines
               minLines: 1, // Sets the minimum number of lines
@@ -500,17 +504,20 @@ Widget _buildAddressRow(int index) {
                     decoration: InputDecoration(
                       labelText: "City",
                       labelStyle: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey // Use dark theme color
-                            : Colors.grey,
-                      ),  
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.grey,
+                          fontWeight: FontWeight.w700
+              ), 
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 16),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[400] // Use dark theme color
+                          : Colors.grey[300], //
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -531,17 +538,20 @@ Widget _buildAddressRow(int index) {
                     decoration: InputDecoration(
                       labelText: "Postal Code",
                       labelStyle: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey // Use dark theme color
-                            : Colors.grey,
-                      ),  
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.grey,
+                          fontWeight: FontWeight.w700
+              ),
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 16),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       filled: true,
-                      fillColor: Colors.grey[100],
+                      fillColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[400] // Use dark theme color
+                          : Colors.grey[300], //
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -565,17 +575,20 @@ Widget _buildAddressRow(int index) {
               decoration: InputDecoration(
                 labelText: "Country",
                 labelStyle: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey // Use dark theme color
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
                       : Colors.grey,
-                ),  
+                    fontWeight: FontWeight.w700
+              ), 
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[400] // Use dark theme color
+                    : Colors.grey[300], //
               ),
               onChanged: (value) {
                 setState(() {
@@ -609,7 +622,7 @@ Widget build(BuildContext context) {
         Navigator.pop(context, true);
         return Future.value(false); // Prevents default back button behavior
       },child: Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          // backgroundColor: Theme.of(context).colorScheme.surface,
     appBar: AppBar(
       title: Text(widget.isEditing ? "Edit Customer" : "Add Customer"),
       leading: IconButton(
@@ -767,7 +780,7 @@ Widget _buildStyledTextField(TextEditingController controller, String label,
                 color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
                       : Colors.grey,
-                  fontWeight: FontWeight.w500
+                  fontWeight: FontWeight.w700
               ),
               filled: true,
               fillColor: Theme.of(context).brightness == Brightness.dark

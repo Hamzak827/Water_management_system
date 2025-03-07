@@ -10,18 +10,22 @@ class AuthProvider with ChangeNotifier {
   bool _isLoggedIn = false;
   String _deliveryboyId = '';
   String _customerId = '';
+  String _fcmtoken = '';
 
   String get role => _role;
   String get token => _token;
   bool get isLoggedIn => _isLoggedIn;
   String get deliveryboyId => _deliveryboyId;
   String get customerId => _customerId;
+  String get fcmtoken => _fcmtoken;
 
-  Future<void> login(String token, String role, {String? deliveryboyId, String? customerId}) async {
+  Future<void> login(String token, String role,
+      {String? deliveryboyId, String? customerId, String? fcmtoken}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true);
     await prefs.setString('role', role);
     await prefs.setString('token', token);
+    await prefs.setString('fcmToken', fcmtoken!);
     
     if (role == 'deliveryboy') {
       await prefs.setString('DeliveryBoyID', deliveryboyId ?? '');
@@ -34,6 +38,7 @@ class AuthProvider with ChangeNotifier {
     _isLoggedIn = true;
     _deliveryboyId = deliveryboyId ?? '';
     _customerId = customerId ?? '';
+    _fcmtoken = fcmtoken ?? '';
 
     notifyListeners();
   }
@@ -43,6 +48,7 @@ class AuthProvider with ChangeNotifier {
     _isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
     _role = prefs.getString('role') ?? '';
     _token = prefs.getString('token') ?? '';
+    _fcmtoken = prefs.getString('fcmToken') ?? '';
     
     if (_role == 'deliveryboy') {
       _deliveryboyId = prefs.getString('DeliveryBoyID') ?? '';
@@ -60,12 +66,14 @@ class AuthProvider with ChangeNotifier {
     await prefs.remove('token');
     await prefs.remove('DeliveryBoyID');
     await prefs.remove('CustomerID');
+    await prefs.remove('fcmToken');
 
     _isLoggedIn = false;
     _role = '';
     _token = '';
     _deliveryboyId = '';
     _customerId = '';
+    _fcmtoken = '';
 
     notifyListeners();
   }

@@ -178,9 +178,15 @@ Fluttertoast.showToast(
         value: value,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,
@@ -233,9 +239,15 @@ Widget _buildStyledTextField(
         keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
           filled: true,
-          fillColor: Colors.grey[100],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,
@@ -298,6 +310,9 @@ Widget _buildStyledTextField(
               if (_isLoading)
                 Center(child: CircularProgressIndicator())
               else
+                SizedBox(
+                  height: 20,
+                ),
                 _buildStyledDropdown(
                   label: 'Customer',
                   value: selectedCustomerId,
@@ -315,7 +330,7 @@ Widget _buildStyledTextField(
                   },
                 ),
               
-              SizedBox(height: 20),
+              SizedBox(height: 3),
               _buildStyledTextField(
                 _serialStartController,
                 "Start Serial Number",
@@ -328,7 +343,7 @@ Widget _buildStyledTextField(
                 },
               ),
 
-SizedBox(height: 20),
+SizedBox(height: 3),
               _buildStyledTextField(
                 _serialEndController,
                 "End Serial Number",
@@ -341,28 +356,33 @@ SizedBox(height: 20),
                 },
               ),
 
-SizedBox(height: 20),
+SizedBox(height: 3),
               _buildStyledTextField(
                 _pricePerBookController,
                 "Price Per Book",
                 isNumeric: true,
               ),
 
-SizedBox(height: 20),
+SizedBox(height: 3),
               _buildStyledTextField(
                 _numberOfTokensController,
                 "Number of Tokens",
                 isNumeric: true,
                 enabled: false,
               ),
-
+SizedBox(
+                height: 20,
+              ),
               Center(
                   child: SizedBox(
                       width: 130.0, // Set your desired width
                       height: 40.0,
                       child: ElevatedButton(
                           onPressed: _saveToken,
-                          child: Text(widget.isEditing ? 'Edit' : 'Add'),
+                          child: Text(
+                            widget.isEditing ? 'Edit' : 'Add',
+                            style: TextStyle(color: Colors.white),
+                          ),
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               padding: const EdgeInsets.symmetric(

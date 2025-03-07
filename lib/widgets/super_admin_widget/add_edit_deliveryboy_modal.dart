@@ -150,7 +150,7 @@ class _DeliveryboyModalState extends State<DeliveryboyModal> {
 
                 // Input Fields with Enhanced Styling
                 _buildStyledTextField(_nameController, 'Name'),
-                const SizedBox(height: 5),
+                const SizedBox(height: 3),
                 _buildStyledTextField(_emailController, 'Email', isEmail: true),
                 const SizedBox(height: 3),
                 _buildStyledTextField(_passwordController, 'Password',
@@ -174,7 +174,9 @@ class _DeliveryboyModalState extends State<DeliveryboyModal> {
                       onPressed: _submitDeliveryboy,
                       child: Text(widget.isEditing
                           ? 'Save Changes'
-                          : 'Add Delivery Boy'),
+                          : 'Add Delivery Boy',
+                        style: const TextStyle(color: Colors.white),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(
@@ -218,9 +220,15 @@ class _DeliveryboyModalState extends State<DeliveryboyModal> {
         obscureText: isPassword,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,

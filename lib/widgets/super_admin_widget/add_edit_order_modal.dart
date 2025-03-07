@@ -39,177 +39,177 @@ class _OrderModalState extends State<OrderModal> {
   String? selectedAddressId;
   String? selectedStatus;
 
-bool isPricePerLiter = true;
-double? customerPricePerLiter;
-double? customerPricePerBottle;
+  bool isPricePerLiter = true;
+  double? customerPricePerLiter;
+  double? customerPricePerBottle;
 
   bool isPricePerLiterNull = false; // Track if PricePerLiter is null
 
   String? selectedDateForAPI;
-  
 
   String _formatDate(String isoDate) {
-  // Parse the ISO 8601 date string
-  DateTime parsedDate = DateTime.parse(isoDate);
+    // Parse the ISO 8601 date string
+    DateTime parsedDate = DateTime.parse(isoDate);
 
-  // Format the date into a desired format (e.g., 'yyyy-MM-dd')
-  return DateFormat('yyyy-MM-dd').format(parsedDate);
-}
-  
+    // Format the date into a desired format (e.g., 'yyyy-MM-dd')
+    return DateFormat('yyyy-MM-dd').format(parsedDate);
+  }
 
   List<Map<String, dynamic>> customers = [];
   List<Map<String, dynamic>> deliveryBoys = [];
   List<Map<String, dynamic>> addresses = [];
   bool isLoading = true; // Add a loading state
 
-@override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  final address = widget.order?['Address'] ?? {};
-  final addressLine = address['AddressLine'] ?? 'N/A';
-  final city = address['City'] ?? 'N/A';
-  final postalCode = address['PostalCode'] ?? 'N/A';
-  final country = address['Country'] ?? 'N/A';
-  final formattedAddress = '$addressLine, $city, $postalCode, $country';
+    final address = widget.order?['Address'] ?? {};
+    final addressLine = address['AddressLine'] ?? 'N/A';
+    final city = address['City'] ?? 'N/A';
+    final postalCode = address['PostalCode'] ?? 'N/A';
+    final country = address['Country'] ?? 'N/A';
+    final formattedAddress = '$addressLine, $city, $postalCode, $country';
 
     selectedStatus = widget.isEditing ? widget.order!['Status'] : 'Processing';
 
-  if (widget.isEditing && widget.order != null) {
+    if (widget.isEditing && widget.order != null) {
       // Parse the DeliveryDate from the order
       final deliveryDate = widget.order!['DeliveryDate'];
       final parsedDate =
           DateTime.parse(deliveryDate); // Parse the ISO 8601 date
 
-    // Set initial values for the form fields
-    _customerController = TextEditingController(text: widget.order!['CustomerID']?['Name'] ?? "");
-    _addressController = TextEditingController(text: formattedAddress);
+      // Set initial values for the form fields
+      _customerController = TextEditingController(
+          text: widget.order!['CustomerID']?['Name'] ?? "");
+      _addressController = TextEditingController(text: formattedAddress);
       _deliverydateController = TextEditingController(
           text: DateFormat('dd/MM/yyyy').format(parsedDate)); // Display format
-    _collectedamountController = TextEditingController(text: (widget.order!['TotalCollectedAmount'] ?? 0).toString());
-    _collectedbottlesController = TextEditingController(text: (widget.order!['TotalCollectedBottles'] ?? 0).toString());
-    _deliveryboyController = TextEditingController(text: widget.order!['DeliveryBoyID']?['Name']);
-    _statusController = TextEditingController(text: widget.order!['Status']);
+      _collectedamountController = TextEditingController(
+          text: (widget.order!['TotalCollectedAmount'] ?? 0).toString());
+      _collectedbottlesController = TextEditingController(
+          text: (widget.order!['TotalCollectedBottles'] ?? 0).toString());
+      _deliveryboyController =
+          TextEditingController(text: widget.order!['DeliveryBoyID']?['Name']);
+      _statusController = TextEditingController(text: widget.order!['Status']);
 
       // Store the API-formatted date
       selectedDateForAPI =
           DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(parsedDate);
 
-    // Populate bottles list
-    bottles = List<Map<String, dynamic>>.from(widget.order!['Bottles'] ?? []);
+      // Populate bottles list
+      bottles = List<Map<String, dynamic>>.from(widget.order!['Bottles'] ?? []);
 
       // Check if PricePerLiter is null to adjust bottle fields
       if (widget.order!['PricePerLiter'] == null) {
         isPricePerLiterNull = true;
       }
 
-    // Set the selected customer, address, and delivery boy
+      // Set the selected customer, address, and delivery boy
       selectedCustomerId =
           widget.order!['CustomerID']?['CustomerID'].toString();
-    selectedAddressId = widget.order!['Address']?['_id'];
-    selectedDeliveryBoyId = widget.order!['DeliveryBoyID']?['DeliveryBoyID'].toString();
+      selectedAddressId = widget.order!['Address']?['_id'];
+      selectedDeliveryBoyId =
+          widget.order!['DeliveryBoyID']?['DeliveryBoyID'].toString();
       selectedStatus = widget.order!['Status'];
     } else {
-    _customerController = TextEditingController();
-    _addressController = TextEditingController();
-    _deliverydateController = TextEditingController();
-    _collectedamountController = TextEditingController();
-    _collectedbottlesController = TextEditingController();
-    _deliveryboyController = TextEditingController();
+      _customerController = TextEditingController();
+      _addressController = TextEditingController();
+      _deliverydateController = TextEditingController();
+      _collectedamountController = TextEditingController();
+      _collectedbottlesController = TextEditingController();
+      _deliveryboyController = TextEditingController();
       _statusController = TextEditingController();
-  }
+    }
 
     print('Data:${selectedCustomerId}');
 
-  // Fetch customers and delivery boys
-  _authService.fetchCustomers().then((data) {
-    setState(() {
+    // Fetch customers and delivery boys
+    _authService.fetchCustomers().then((data) {
+      setState(() {
         customers = data;
-      if (widget.isEditing) {
-        _onCustomerChanged(selectedCustomerId); // Populate addresses based on selected customer
-      }
+        if (widget.isEditing) {
+          _onCustomerChanged(
+              selectedCustomerId); // Populate addresses based on selected customer
+        }
+      });
     });
-  });
 
-  _authService.fetchDeliveryBoys().then((data) {
-    setState(() {
+    _authService.fetchDeliveryBoys().then((data) {
+      setState(() {
         deliveryBoys = data;
+      });
     });
-  });
 
-  // Simulate fetching data
+    // Simulate fetching data
     Future.delayed(Duration(seconds: 2), () {
       setState(() {
         isLoading = false; // Data is ready, stop loading
       });
     });
-}
-
-
-
-
-
-
-
-
-bool _isCustomerAndAddressEditable() {
-  // Always editable in add section, apply restrictions only in edit section
-  if (!widget.isEditing) return true;
-  return selectedStatus != 'Delivered' && 
-         selectedStatus != 'Out For Delivery' && 
-         selectedStatus != 'Canceled' && 
-         selectedStatus != 'Processing';
-}
-
-bool _isDeliveryDateEditable() {
-  // Always editable in add section, apply restriction only in edit section
-  if (!widget.isEditing) return true;
-  return selectedStatus != 'Delivered';
-}
-
-void _onCustomerChanged(String? customerId) {
-  if (customerId == null || customerId.isEmpty) {
-    setState(() {
-      addresses = [];
-      selectedAddressId = null;
-      bottles.clear(); // Ensure the bottles list is cleared if no customer is selected
-    });
-    return;
   }
 
-  final selectedCustomer = customers.firstWhere(
-    (customer) => customer['CustomerID'].toString() == customerId,
-    orElse: () => {},
-  );
+  bool _isCustomerAndAddressEditable() {
+    // Always editable in add section, apply restrictions only in edit section
+    if (!widget.isEditing) return true;
+    return selectedStatus != 'Delivered' &&
+        selectedStatus != 'Out For Delivery' &&
+        selectedStatus != 'Canceled' &&
+        selectedStatus != 'Processing';
+  }
 
-  setState(() {
-    // Get customer pricing info
-    customerPricePerLiter = selectedCustomer['PricePerLiter']?.toDouble();
-    customerPricePerBottle = selectedCustomer['PricePerBottle']?.toDouble();
-    isPricePerLiter = customerPricePerLiter != null && customerPricePerLiter! > 0;
+  bool _isDeliveryDateEditable() {
+    // Always editable in add section, apply restriction only in edit section
+    if (!widget.isEditing) return true;
+    return selectedStatus != 'Delivered';
+  }
 
-    addresses = List<Map<String, dynamic>>.from(selectedCustomer['Addresses'] ?? []);
-
-    // If editing an existing order, load the existing bottles data
-    if (widget.order != null) {
-      // Populate the bottles list from the order data if editing
-      bottles = List<Map<String, dynamic>>.from(widget.order?['Bottles'] ?? []);
-    } else {
-      // Clear existing bottles and add default entry if new
-      bottles.clear();
-      if (!isPricePerLiter) {
-        bottles.add({"NumberOfLiters": 19, "NumberOfBottles": ""});
-      }
+  void _onCustomerChanged(String? customerId) {
+    if (customerId == null || customerId.isEmpty) {
+      setState(() {
+        addresses = [];
+        selectedAddressId = null;
+        bottles
+            .clear(); // Ensure the bottles list is cleared if no customer is selected
+      });
+      return;
     }
 
-    selectedAddressId = addresses.firstWhere(
-      (address) => address['_id'] == widget.order?['Address']?['_id'],
+    final selectedCustomer = customers.firstWhere(
+      (customer) => customer['CustomerID'].toString() == customerId,
       orElse: () => {},
-    )?['_id'] ?? (addresses.isNotEmpty ? addresses[0]['_id'] : null);
-  });
-}
+    );
 
+    setState(() {
+      // Get customer pricing info
+      customerPricePerLiter = selectedCustomer['PricePerLiter']?.toDouble();
+      customerPricePerBottle = selectedCustomer['PricePerBottle']?.toDouble();
+      isPricePerLiter =
+          customerPricePerLiter != null && customerPricePerLiter! > 0;
 
+      addresses =
+          List<Map<String, dynamic>>.from(selectedCustomer['Addresses'] ?? []);
+
+      // If editing an existing order, load the existing bottles data
+      if (widget.order != null) {
+        // Populate the bottles list from the order data if editing
+        bottles =
+            List<Map<String, dynamic>>.from(widget.order?['Bottles'] ?? []);
+      } else {
+        // Clear existing bottles and add default entry if new
+        bottles.clear();
+        if (!isPricePerLiter) {
+          bottles.add({"NumberOfLiters": 19, "NumberOfBottles": ""});
+        }
+      }
+
+      selectedAddressId = addresses.firstWhere(
+            (address) => address['_id'] == widget.order?['Address']?['_id'],
+            orElse: () => {},
+          )?['_id'] ??
+          (addresses.isNotEmpty ? addresses[0]['_id'] : null);
+    });
+  }
 
   @override
   void dispose() {
@@ -223,25 +223,22 @@ void _onCustomerChanged(String? customerId) {
     super.dispose();
   }
 
-void _addBottle() {
-  if (!isPricePerLiter && bottles.isNotEmpty) return;
+  void _addBottle() {
+    if (!isPricePerLiter && bottles.isNotEmpty) return;
 
-  setState(() {
-    bottles.add({
-      "NumberOfLiters": isPricePerLiter ? "" : 19,
-      "NumberOfBottles": ""
+    setState(() {
+      bottles.add(
+          {"NumberOfLiters": isPricePerLiter ? "" : 19, "NumberOfBottles": ""});
     });
-  });
-}
+  }
+
   void _removeBottle(int index) {
     setState(() {
       bottles.removeAt(index);
     });
   }
 
-
-
- void _updateAddresses(String? customerId) {
+  void _updateAddresses(String? customerId) {
     if (customerId == null) {
       setState(() {
         addresses = [];
@@ -260,7 +257,6 @@ void _addBottle() {
       selectedAddressId = null;
     });
   }
-
 
 // Date Picker
   Future<void> _selectDate(BuildContext context) async {
@@ -281,52 +277,51 @@ void _addBottle() {
   }
 
   // Dropdown for status
-Widget _buildStatusDropdown() {
-  // Define available statuses based on whether it's editing or not
-  final availableStatuses = widget.isEditing
-      ? ['Out For Delivery', 'Delivered', 'Canceled'] // Options for edit mode
-      : ['Processing']; // Default option for non-edit mode
+  Widget _buildStatusDropdown() {
+    // Define available statuses based on whether it's editing or not
+    final availableStatuses = widget.isEditing
+        ? ['Out For Delivery', 'Delivered', 'Canceled'] // Options for edit mode
+        : ['Processing']; // Default option for non-edit mode
 
-  // Determine the initial value for the dropdown
-  String? initialValue =
-      widget.isEditing && selectedStatus == 'Processing' ? null : selectedStatus;
+    // Determine the initial value for the dropdown
+    String? initialValue = widget.isEditing && selectedStatus == 'Processing'
+        ? null
+        : selectedStatus;
 
-  return widget.isEditing
-      ? _buildStyledDropdown(
-          label: 'Status',
-          value: initialValue,
-          items: availableStatuses.map((status) {
-            return DropdownMenuItem<String>(
-              value: status,
-              child: Text(status),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              selectedStatus = value;
-            });
-          },
-        )
-      : Container(); // Hide the status dropdown for new orders
-}
+    return widget.isEditing
+        ? _buildStyledDropdown(
+            label: 'Status',
+            value: initialValue,
+            items: availableStatuses.map((status) {
+              return DropdownMenuItem<String>(
+                value: status,
+                child: Text(status),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                selectedStatus = value;
+              });
+            },
+          )
+        : Container(); // Hide the status dropdown for new orders
+  }
 
-
-   Future<void> _submitOrder() async {
+  Future<void> _submitOrder() async {
     if (_formKey.currentState?.validate() ?? false) {
-
-if (bottles.isEmpty) {
-      DialogUtil.showErrorMessage(context,'Please add at least one bottle');
-      return;
-    }
-
-    for (var bottle in bottles) {
-      if (bottle['NumberOfLiters'].toString().isEmpty ||
-          bottle['NumberOfBottles'].toString().isEmpty ) {
-        DialogUtil.showErrorMessage(context,'All bottle fields are required');
+      if (bottles.isEmpty) {
+        DialogUtil.showErrorMessage(context, 'Please add at least one bottle');
         return;
       }
-    }
 
+      for (var bottle in bottles) {
+        if (bottle['NumberOfLiters'].toString().isEmpty ||
+            bottle['NumberOfBottles'].toString().isEmpty) {
+          DialogUtil.showErrorMessage(
+              context, 'All bottle fields are required');
+          return;
+        }
+      }
 
       final orderData = {
         "CustomerID": selectedCustomerId,
@@ -339,19 +334,20 @@ if (bottles.isEmpty) {
         "Bottles": bottles,
       };
 
-try{
-      bool success = false;
-      if (widget.isEditing) {
-        // Update logic
-        success = await AuthService().updateOrderData(widget.orderId!, orderData);
-      } else {
-        // Add logic
-       success = await AuthService().addNewOrder(orderData);
-      }
+      try {
+        bool success = false;
+        if (widget.isEditing) {
+          // Update logic
+          success =
+              await AuthService().updateOrderData(widget.orderId!, orderData);
+        } else {
+          // Add logic
+          success = await AuthService().addNewOrder(orderData);
+        }
 
-      if (success) {
-        Navigator.pop(context, true); // Close the modal
-       
+        if (success) {
+          Navigator.pop(context, true); // Close the modal
+
           Fluttertoast.showToast(
             msg: widget.isEditing
                 ? 'Order Updated Successfully'
@@ -362,8 +358,7 @@ try{
             textColor: Colors.white,
             fontSize: 16.0,
           );
-      } else {
-        
+        } else {
           Fluttertoast.showToast(
             msg: widget.isEditing
                 ? 'Failed to update order'
@@ -374,8 +369,8 @@ try{
             textColor: Colors.white,
             fontSize: 16.0,
           );
-      }
-}catch (e) {
+        }
+      } catch (e) {
         Fluttertoast.showToast(
           msg: e.toString().replaceAll('Exception: ', ''),
           toastLength: Toast.LENGTH_SHORT,
@@ -384,77 +379,65 @@ try{
           textColor: Colors.white,
           fontSize: 16.0,
         );
-    }
+      }
       print("Order submitted: $orderData");
     }
   }
 
-
-
-
-
-
-
-Widget _buildStyledTextField(
-  TextEditingController controller,
-  String label,
-  {bool isNumeric = false, bool isDateField = false, bool enabled = true}) {
-  
-  return SizedBox(
-    height: 60, // Consistent height with text field
-    child: TextFormField(
-      controller: controller,
-      enabled: enabled,
-      readOnly: isDateField, // Make it read-only if it's a date field
+  Widget _buildStyledTextField(TextEditingController controller, String label,
+      {bool isNumeric = false, bool isDateField = false, bool enabled = true}) {
+    return SizedBox(
+      height: 60, // Consistent height with text field
+      child: TextFormField(
+        controller: controller,
+        enabled: enabled,
+        readOnly: isDateField, // Make it read-only if it's a date field
         style: const TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        labelText: label,
+        decoration: InputDecoration(
+          labelText: label,
           labelStyle: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.white // Use dark theme color
                   : Colors.grey,
-              fontWeight: FontWeight.w500),
-        filled: true,
+              fontWeight: FontWeight.w700),
+          filled: true,
           fillColor: Theme.of(context).brightness == Brightness.dark
               ? Colors.grey[400] // Use dark theme color
               : Colors.grey[300],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide.none,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.blue, width: 2.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+          errorStyle: const TextStyle(height: 1, color: Colors.red),
+          suffixIcon: isDateField
+              ? IconButton(
+                  icon: Icon(Icons.calendar_today), // Calendar icon
+                  onPressed: () async {
+                    if (enabled) {
+                      // Trigger the date picker when the icon is pressed
+                      _selectDate(context);
+                    }
+                  },
+                )
+              : null, // No icon if not a date field
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: const BorderSide(color: Colors.blue, width: 2.0),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-        errorStyle: const TextStyle(height: 1, color: Colors.red),
-        suffixIcon: isDateField
-            ? IconButton(
-                icon: Icon(Icons.calendar_today), // Calendar icon
-                onPressed: () async {
-                  if (enabled) {
-                    // Trigger the date picker when the icon is pressed
-                    _selectDate(context);
-                  }
-                },
-              )
-            : null, // No icon if not a date field
+        validator: (value) =>
+            value?.isEmpty ?? true ? 'Please enter a $label' : null,
       ),
-      validator: (value) => value?.isEmpty ?? true ? 'Please enter a $label' : null,
-    ),
-  );
-}
+    );
+  }
 
-
-
-
-
-
- Widget _buildStyledDropdown({
+  Widget _buildStyledDropdown({
     required String label,
     required String? value,
     required List<DropdownMenuItem<String>> items,
@@ -470,7 +453,7 @@ Widget _buildStyledTextField(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.white // Use dark theme color
                   : Colors.grey,
-              fontWeight: FontWeight.w500),
+              fontWeight: FontWeight.w700),
           filled: true,
           fillColor: Theme.of(context).brightness == Brightness.dark
               ? Colors.grey[400] // Use dark theme color
@@ -511,10 +494,9 @@ Widget _buildStyledTextField(
               : Colors.black, // Black arrow in light mode
         ),
         validator: (value) {
-
           if (label == 'Status') {
-          return null; // No validation for status field
-        }
+            return null; // No validation for status field
+          }
           if (value == null || value.isEmpty) {
             return 'Please select a $label';
           }
@@ -524,104 +506,96 @@ Widget _buildStyledTextField(
     );
   }
 
-
-
-
-
-
-Widget _buildBottleRow(int index) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        if (isPricePerLiter) ...[
+  Widget _buildBottleRow(int index) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (isPricePerLiter) ...[
+            Expanded(
+              child: TextFormField(
+                initialValue: bottles[index]['NumberOfLiters'].toString(),
+                style: const TextStyle(color: Colors.black),
+                decoration: _bottleFieldDecoration("Liters"),
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {
+                    bottles[index]['NumberOfLiters'] =
+                        int.tryParse(value) ?? "";
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+          ],
           Expanded(
             child: TextFormField(
-              initialValue: bottles[index]['NumberOfLiters'].toString(),
-                style: const TextStyle(color: Colors.black),
-              decoration: _bottleFieldDecoration("Liters"),
+              initialValue: bottles[index]['NumberOfBottles'].toString(),
+              style: const TextStyle(color: Colors.black),
+              decoration: _bottleFieldDecoration("Bottles"),
               keyboardType: TextInputType.number,
               onChanged: (value) {
                 setState(() {
-                  bottles[index]['NumberOfLiters'] = int.tryParse(value) ?? "";
+                  bottles[index]['NumberOfBottles'] = int.tryParse(value) ?? "";
                 });
               },
             ),
           ),
-          const SizedBox(width: 10),
+          if (isPricePerLiter) // Only show delete button for price-per-liter
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: () => _removeBottle(index),
+            ),
         ],
-        Expanded(
-          child: TextFormField(
-            initialValue: bottles[index]['NumberOfBottles'].toString(),
-              style: const TextStyle(color: Colors.black),
-            decoration: _bottleFieldDecoration("Bottles"),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                bottles[index]['NumberOfBottles'] = int.tryParse(value) ?? "";
-              });
-            },
-          ),
-        ),
-        if (isPricePerLiter) // Only show delete button for price-per-liter
-          IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => _removeBottle(index),
-          ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
-InputDecoration _bottleFieldDecoration(String label) {
-  return InputDecoration(
-    labelText: label,
+  InputDecoration _bottleFieldDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
       labelStyle: TextStyle(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey // Use dark theme color
-            : Colors.grey,
-      ),  
-    contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-    filled: true,
-    fillColor: Colors.grey[100],
-  );
-}
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white // Use dark theme color
+              : Colors.grey,
 
-
-
-
-
-
-
+          fontWeight: FontWeight.w700),
+      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+      filled: true,
+      fillColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[400] // Use dark theme color
+          : Colors.grey[300],
+    );
+  }
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     if (isLoading) {
       return Center(
           child:
               CircularProgressIndicator()); // Show loading indicator while data is being fetched
     }
 
-  return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-    appBar: AppBar(
-      title: Text(widget.isEditing ? "Edit Order" : "Add Order"),
-      leading: IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: () => Navigator.pop(context), // Close the dialog
+    return Scaffold(
+      // backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        title: Text(widget.isEditing ? "Edit Order" : "Add Order"),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context), // Close the dialog
+        ),
       ),
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
 
                 // Customer Dropdown
                 _buildStyledDropdown(
@@ -703,18 +677,21 @@ Widget build(BuildContext context) {
                   isDateField: true, // Enable calendar icon for date picker
                 ),
 
-              const SizedBox(height: 5),
+                const SizedBox(height: 5),
                 _buildStyledTextField(
                     _collectedamountController, 'Collected Amount'),
-              const SizedBox(height: 3),
+                const SizedBox(height: 3),
                 _buildStyledTextField(
                     _collectedbottlesController, 'Collected Bottles'),
-              const SizedBox(height: 3),
+                const SizedBox(height: 3),
 
-              _buildStatusDropdown(),
+                _buildStatusDropdown(),
 
                 const SizedBox(height: 20),
                 const Text("Bottles:"),
+                const SizedBox(
+                  height: 10,
+                ),
                 ListView.builder(
                   shrinkWrap: true,
                   itemCount: bottles.length,
@@ -723,7 +700,7 @@ Widget build(BuildContext context) {
 
                 // Conditionally show/hide the "Add Bottle" button
                 if (isPricePerLiter)
-                TextButton.icon(
+                  TextButton.icon(
                     onPressed: _addBottle,
                     icon: const Icon(Icons.add),
                     label: const Text("Add Bottle"),
@@ -731,35 +708,35 @@ Widget build(BuildContext context) {
 
                 const SizedBox(height: 20),
 
-              // Submit Button
-              Center(
-                child: SizedBox(
-                  width: 130.0, // Set your desired width
-                  height: 40.0,
-                  child: ElevatedButton(
-                    onPressed: _submitOrder,
+                // Submit Button
+                Center(
+                  child: SizedBox(
+                    width: 130.0, // Set your desired width
+                    height: 40.0,
+                    child: ElevatedButton(
+                      onPressed: _submitOrder,
                       child: Text(
                         widget.isEditing ? 'Save Changes' : 'Add Order',
                         style: const TextStyle(color: Colors.white),
                       ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         textStyle: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

@@ -193,11 +193,19 @@ Future<void> _selectDate(BuildContext context) async {
         controller: controller,
         enabled: enabled,
         readOnly: isDateField,
+        style: const TextStyle(
+            color: Colors.black), // Ensures entered text is black
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,
@@ -240,9 +248,15 @@ Future<void> _selectDate(BuildContext context) async {
         value: value,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
             borderSide: BorderSide.none,
@@ -260,7 +274,10 @@ Future<void> _selectDate(BuildContext context) async {
           errorStyle: const TextStyle(height: 1, color: Colors.red),
         ),
         items: items,
+        
         onChanged: onChanged,
+        style: const TextStyle(
+            color: Colors.black), // Ensures entered text is black
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please select a $label';
@@ -350,14 +367,20 @@ return Scaffold(
                   height: 40.0,
                   child: ElevatedButton(
                     onPressed: _submitOrder,
-                    child: Text('Add Order'),
+                        child: Text(
+                          'Add Order',
+                          style: const TextStyle(color: Colors.white),
+                        ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
                     ),
                   ),
                 ),

@@ -46,8 +46,13 @@ Widget _buildShimmerEffect() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+                baseColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[800]! // Dark grey for dark mode
+                    : Colors.grey[300]!,
+                highlightColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors
+                        .grey[700]! // Slightly lighter dark grey for dark mode
+                    : Colors.grey[100]!,
           child: Container(
             width: double.infinity,
             height: 480,
@@ -59,8 +64,13 @@ Widget _buildShimmerEffect() {
         ),
         const SizedBox(height: 20),
         Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+                baseColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[800]! // Dark grey for dark mode
+                    : Colors.grey[300]!,
+                highlightColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors
+                        .grey[700]! // Slightly lighter dark grey for dark mode
+                    : Colors.grey[100]!,
           child: Container(
             width: double.infinity,
             height: 130,
@@ -72,8 +82,13 @@ Widget _buildShimmerEffect() {
         ),
         const SizedBox(height: 20),
         Shimmer.fromColors(
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
+                baseColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[800]! // Dark grey for dark mode
+                    : Colors.grey[300]!,
+                highlightColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors
+                        .grey[700]! // Slightly lighter dark grey for dark mode
+                    : Colors.grey[100]!,
           child: Container(
             width: double.infinity,
             height: 130,
@@ -117,7 +132,8 @@ Widget _buildProfileCard(customer, addresses) => Card(
             ),
           ],
         ),
-        const Divider(color: Colors.black12, height: 32),
+              Divider(
+                  color: Theme.of(context).colorScheme.secondary, height: 32),
         _buildInfoRow(Icons.badge, 'Name', customer['Name']),
         _buildInfoRow(Icons.email, 'Email', customer['Email']),
         _buildInfoRow(Icons.phone, 'Phone', customer['Phone']),
@@ -133,7 +149,8 @@ Widget _buildProfileCard(customer, addresses) => Card(
           ],
         ),
         if (addresses.isNotEmpty) ...[
-          const Divider(color: Colors.black12, height: 32),
+                Divider(
+                    color: Theme.of(context).colorScheme.secondary, height: 32),
           _buildInfoRow(
             Icons.location_on,
             'Primary Address',
@@ -234,7 +251,7 @@ Widget _buildInfoRow(IconData icon, String label, String value, {bool multiLine 
               label,
               style: GoogleFonts.poppins(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+               
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -243,7 +260,7 @@ Widget _buildInfoRow(IconData icon, String label, String value, {bool multiLine 
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey.shade800,
+               
               ),
               maxLines: multiLine ? 2 : 1,
               overflow: TextOverflow.ellipsis,

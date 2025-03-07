@@ -36,7 +36,7 @@ class OrderPreviewModal extends StatelessWidget {
                     style: GoogleFonts.sourceCodePro(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                   const SizedBox(height: 16.0),
@@ -53,7 +53,7 @@ class OrderPreviewModal extends StatelessWidget {
                     style: GoogleFonts.sourceCodePro(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                     
                     ),
                   ),
                   const SizedBox(height: 8.0),
@@ -111,7 +111,7 @@ class OrderPreviewModal extends StatelessWidget {
               value,
               style: GoogleFonts.sourceCodePro(
                 fontSize: 15.0,
-                color: Colors.grey[800],
+                color: Color.fromARGB(255, 196, 196, 191)
               ),
             ),
           ),

@@ -9,27 +9,23 @@ import 'package:water_management_system/services/auth_service.dart';
 import 'package:water_management_system/widgets/super_admin_widget/add_edit_deliveryboy_modal.dart';
 
 class DeliveryboyScreen extends StatefulWidget {
-   final String role;
-  const DeliveryboyScreen({Key? key,required this.role}) : super(key: key);
-
-
+  final String role;
+  const DeliveryboyScreen({Key? key, required this.role}) : super(key: key);
 
   @override
-  _DeliveryboyScreenState createState() =>
-      _DeliveryboyScreenState();
+  _DeliveryboyScreenState createState() => _DeliveryboyScreenState();
 }
 
-class _DeliveryboyScreenState
-    extends State<DeliveryboyScreen> {
+class _DeliveryboyScreenState extends State<DeliveryboyScreen> {
   late Future<List<Map<String, dynamic>>> _deliveryboysFuture;
   final AuthService _authService = AuthService();
   List<Map<String, dynamic>> deliveryboys = [];
   int _currentPage = 0; // Track the current page
   final int _itemsPerPage = 4; // Number of items per page
 
-final TextEditingController _searchController = TextEditingController();
-String _searchQuery = '';
-List<Map<String, dynamic>> filteredDeliveryboys = [];
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  List<Map<String, dynamic>> filteredDeliveryboys = [];
 
   @override
   void initState() {
@@ -43,48 +39,47 @@ List<Map<String, dynamic>> filteredDeliveryboys = [];
   //   });
   // }
   void _fetchDeliveryboy() {
-  setState(() {
-    _deliveryboysFuture = _authService.fetchDeliveryBoys().then((data) {
-      // Reverse the list to show the newest delivery boy first
-      deliveryboys = data.reversed.toList();
-      return deliveryboys;
+    setState(() {
+      _deliveryboysFuture = _authService.fetchDeliveryBoys().then((data) {
+        // Reverse the list to show the newest delivery boy first
+        deliveryboys = data.reversed.toList();
+        return deliveryboys;
+      });
     });
-  });
-}
-
+  }
 
   String formatPhoneNumber(String phone) {
-  // Remove any non-digit characters
-  phone = phone.replaceAll(RegExp(r'\D'), '');
-  // Format the phone number to "0300-0000000"
-  if (phone.length == 11) {
-    return '${phone.substring(0, 4)}-${phone.substring(4)}';
+    // Remove any non-digit characters
+    phone = phone.replaceAll(RegExp(r'\D'), '');
+    // Format the phone number to "0300-0000000"
+    if (phone.length == 11) {
+      return '${phone.substring(0, 4)}-${phone.substring(4)}';
+    }
+    return phone; // Return as is if it's not in the correct format
   }
-  return phone; // Return as is if it's not in the correct format
-}
 
-String _formatCnic(String cnic) {
-  if (cnic.length == 13) {
-    return '${cnic.substring(0, 5)}-${cnic.substring(5, 11)}-${cnic.substring(11, 13)}';
+  String _formatCnic(String cnic) {
+    if (cnic.length == 13) {
+      return '${cnic.substring(0, 5)}-${cnic.substring(5, 11)}-${cnic.substring(11, 13)}';
+    }
+    return 'Invalid CNIC'; // Return a default or error message if the CNIC is not valid
   }
-  return 'Invalid CNIC';  // Return a default or error message if the CNIC is not valid
-}
 
+  void _filterDeliveryboys(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+      filteredDeliveryboys = deliveryboys.where((deliveryboy) {
+        final name = deliveryboy['Name']?.toString().toLowerCase() ?? '';
+        final email = deliveryboy['Email']?.toString().toLowerCase() ?? '';
+        final phone = deliveryboy['Phone']?.toString().toLowerCase() ?? '';
+        return name.contains(_searchQuery) ||
+            email.contains(_searchQuery) ||
+            phone.contains(_searchQuery);
+      }).toList();
+      _currentPage = 0; // Reset to first page when search changes
+    });
+  }
 
-void _filterDeliveryboys(String query) {
-  setState(() {
-    _searchQuery = query.toLowerCase();
-    filteredDeliveryboys = deliveryboys.where((deliveryboy) {
-      final name = deliveryboy['Name']?.toString().toLowerCase() ?? '';
-      final email = deliveryboy['Email']?.toString().toLowerCase() ?? '';
-      final phone = deliveryboy['Phone']?.toString().toLowerCase() ?? '';
-      return name.contains(_searchQuery) ||
-          email.contains(_searchQuery) ||
-          phone.contains(_searchQuery);
-    }).toList();
-    _currentPage = 0; // Reset to first page when search changes
-  });
-}
   // List<Map<String, dynamic>> _getPaginatedDeliveryBoys() {
   //   final startIndex = _currentPage * _itemsPerPage;
   //   final endIndex = startIndex + _itemsPerPage;
@@ -94,27 +89,28 @@ void _filterDeliveryboys(String query) {
   //   );
   // }
   List<Map<String, dynamic>> _getPaginatedDeliveryBoys() {
-  final listToUse = _searchQuery.isEmpty ? deliveryboys : filteredDeliveryboys;
-  final startIndex = _currentPage * _itemsPerPage;
-  final endIndex = startIndex + _itemsPerPage;
-  return listToUse.sublist(
-    startIndex,
-    endIndex > listToUse.length ? listToUse.length : endIndex,
-  );
-}
+    final listToUse =
+        _searchQuery.isEmpty ? deliveryboys : filteredDeliveryboys;
+    final startIndex = _currentPage * _itemsPerPage;
+    final endIndex = startIndex + _itemsPerPage;
+    return listToUse.sublist(
+      startIndex,
+      endIndex > listToUse.length ? listToUse.length : endIndex,
+    );
+  }
 
-
-int get totalPages {
-  final listToUse = _searchQuery.isEmpty ? deliveryboys : filteredDeliveryboys;
-  return (listToUse.length / _itemsPerPage).ceil();
-}
+  int get totalPages {
+    final listToUse =
+        _searchQuery.isEmpty ? deliveryboys : filteredDeliveryboys;
+    return (listToUse.length / _itemsPerPage).ceil();
+  }
 
   @override
   Widget build(BuildContext context) {
     final role = Provider.of<AuthProvider>(context).role;
-    final totalItems = _searchQuery.isEmpty 
-    ? deliveryboys.length 
-    : filteredDeliveryboys.length;
+    final totalItems = _searchQuery.isEmpty
+        ? deliveryboys.length
+        : filteredDeliveryboys.length;
 
     return Scaffold(
       appBar: AppBar(
@@ -131,32 +127,73 @@ int get totalPages {
           Navigator.pushNamed(context, route);
         },
       ),
-
-
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _deliveryboysFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Padding(
               padding: const EdgeInsets.all(10),
-              child: SingleChildScrollView(
+              child: Column(children: [
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search by name, email, or phone...',
+                    hintStyle:
+                        GoogleFonts.lato(fontSize: 16, color: Colors.black54),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  style: TextStyle(
+                      color: Colors.black), // Ensures entered text is black
+                  onChanged: _filterDeliveryboys,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
                 child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
+                      baseColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[800]! // Dark grey for dark mode
+                          : Colors.grey[300]!, // Light grey for light mode
+                      highlightColor: Theme.of(context).brightness ==
+                              Brightness.dark
+                          ? Colors.grey[
+                              700]! // Slightly lighter dark grey for dark mode
+                          : Colors.grey[
+                              100]!, // Slightly lighter grey for light mode
                   child: Column(
                     children: List.generate(4, (index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Container(
                           width: double.infinity,
-                          height: 150,
-                          color: Colors.white,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.grey[
+                                        900]! // Dark background for dark mode
+                                    : Colors.white,
+                              ),
+                              // White background for light mode
                         ),
                       );
                     }),
                   ),
                 ),
-              ),
+                  ),
+                )
+              ]),
+             
             );
           } else if (snapshot.hasError) {
             return const Center(child: Text('No delivery boys found.'));
@@ -167,59 +204,56 @@ int get totalPages {
             final paginatedDeliveryboys = _getPaginatedDeliveryBoys();
             return Column(
               children: [
-
-
                 Padding(
-  padding: const EdgeInsets.all(12.0),
-  child: TextField(
-    controller: _searchController,
-    decoration: InputDecoration(
-      hintText: 'Search by name, email, or phone...',
+                  padding: const EdgeInsets.all(12.0),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search by name, email, or phone...',
                       hintStyle:
                           GoogleFonts.lato(fontSize: 16, color: Colors.black54),
-      
-      prefixIcon: Icon(Icons.search),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      filled: true,
-      fillColor: Colors.white,
-    ),
-    onChanged: _filterDeliveryboys,
-  ),
-),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.grey,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    onChanged: _filterDeliveryboys,
+                    style: TextStyle(
+                        color: Colors.black), // Ensures entered text is black
+                  ),
+                ),
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(10),
-
-
-
-
-
-                    
-                    
                     itemCount: _getPaginatedDeliveryBoys().length,
                     itemBuilder: (context, index) {
-                    
-                       final deliveryboy = _getPaginatedDeliveryBoys()[index];
-
+                      final deliveryboy = _getPaginatedDeliveryBoys()[index];
 
                       bool shouldHideDeleteButton = widget.role == 'admin';
 
                       return Container(
-                        
-  margin: const EdgeInsets.only(bottom: 10),
-  decoration: BoxDecoration(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
     borderRadius: BorderRadius.circular(10),
+                          
+                            
     border: Border(
-      top: BorderSide(color: Colors.black, width: 1),  // Normal border on top
-      left: BorderSide(color: Colors.black, width: 1), // Normal border on left
+                              top: BorderSide(
+                                  color: Colors.grey, width: 1), // Top border
+                              left: BorderSide(
+                                  color: Colors
+                                      .grey, // Uses the theme's default border color
+
+                                  width: 1), // Left border
                               right: BorderSide(
-                                  color: Colors.black,
-                                  width:
-                                      2), // Thicker border on the right for 3D effect
+                                  color: Colors.grey, width: 2), // Right border
                               bottom: BorderSide(
-                                  color: Colors.black,
+                                  color: Colors.grey,
                                   width:
                                       2), // Thicker border on the bottom for 3D effect
     ),
@@ -232,212 +266,280 @@ int get totalPages {
       ),
     ],
   ),
+                          child: Card(
+                           
+                            margin: EdgeInsets
+                                .zero, // No additional margin here as we handle it in the outer container
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation:
+                                0, // We don't need the card's internal shadow since we are using BoxShadow
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 18, horizontal: 18),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Profile icon and Name
+                                  Row(
+                                    children: [
+                                      SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          deliveryboy['Name'] ?? 'N/A',
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 22,
+                                           
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                      height: 8), // Space after profile section
 
-  
-  child:Card(
-  color:  Color(0xFFFCFCF7),
-  margin: EdgeInsets.zero, // No additional margin here as we handle it in the outer container
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(10),
-  ),
-  elevation: 0, // We don't need the card's internal shadow since we are using BoxShadow
-  child: Padding(
-    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Profile icon and Name
-        Row(
-          children: [
-          
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                deliveryboy['Name'] ?? 'N/A',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 22,
-                  color: Colors.black87,
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8), // Space after profile section
+                                  // Customer details with key-value pairs on the same line
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Email
+                                      // Price Per Liter
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 15),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "Email: ",
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                deliveryboy['Email'] ?? 'N/A',
+                                                style:
+                                                    GoogleFonts.sourceCodePro(
+                                                        fontSize: 14,
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            196,
+                                                            196,
+                                                            191)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
 
-        // Customer details with key-value pairs on the same line
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Email
-            // Price Per Liter
-                  Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                child:
-            Row(
-              children: [
-                Text(
-                  "Email: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
-                ),
-                Expanded(
-                  child: Text(
-                    deliveryboy['Email'] ?? 'N/A',
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
-                  ),
-                ),
-              ],
-            ),
-          ),
-            SizedBox(height: 4),
+                                      // Phone
+                                      // Price Per Liter
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 15),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "Phone: ",
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                formatPhoneNumber(
+                                                    deliveryboy['Phone']
+                                                            .toString() ??
+                                                        'N/A'),
+                                                style:
+                                                    GoogleFonts.sourceCodePro(
+                                                        fontSize: 14,
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            196,
+                                                            196,
+                                                            191)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
 
+                                      // Remaining Balance
+                                      // Price Per Liter
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 15),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "CNIC: ",
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                deliveryboy['CNIC']
+                                                        .toString() ??
+                                                    'N/A',
+                                                style:
+                                                    GoogleFonts.sourceCodePro(
+                                                        fontSize: 14,
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            196,
+                                                            196,
+                                                            191)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
 
-            
+                                      //
+                                      //// Price Per Liter
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 15),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "Assigned Area: ",
+                                              style: GoogleFonts.sourceCodePro(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                deliveryboy['AssignedArea']
+                                                        .toString() ??
+                                                    'N/A',
+                                                style:
+                                                    GoogleFonts.sourceCodePro(
+                                                        fontSize: 14,
+                                                        color: Color.fromARGB(
+                                                            255,
+                                                            196,
+                                                            196,
+                                                            191)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
 
-            // Phone
-            // Price Per Liter
-                  Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                child:
-            Row(
-              children: [
-                Text(
-                  "Phone: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
-                ),
-                Expanded(
-                  child: Text(
-                    formatPhoneNumber(deliveryboy['Phone'].toString() ?? 'N/A'),
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
-                  ),
-                ),
-              ],
-            ),
-           ),
-            SizedBox(height: 4),
+                                      // Price Per Liter
 
-            // Remaining Balance
-            // Price Per Liter
-                  Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                child:
-            Row(
-              children: [
-                Text(
-                  "CNIC: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
-                ),
-                Expanded(
-                  child: Text(
-                    deliveryboy['CNIC'].toString() ?? 'N/A',
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
-                  ),
-                ),
-              ],
-            ),
-                  ),
-            SizedBox(height: 4),
+                                      // Add space before buttons
+                                    ],
+                                  ),
 
-            //
-            //// Price Per Liter
-                  Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                child: Row(
-              children: [
-                Text(
-                  "Assigned Area: ",
-                  style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w600),
-                ),
-                Expanded(
-                  child: Text(
-                    deliveryboy['AssignedArea'].toString()?? 'N/A',
-                    style: GoogleFonts.sourceCodePro(fontSize: 14, color: Colors.black54),
-                  ),
-                ),
-              ],
-            ),
-                  ),
-            SizedBox(height: 10),
-
-            // Price Per Liter
-           
-             // Add space before buttons
-          ],
-        ),
-
-
-
-
-
-        // Action Buttons (Edit and Delete)
-   Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    // Edit Button
-    SizedBox(
-      width: 100,
-      height: 40, // Set width for the button
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          primary: Colors.white, // Button background color
-          onPrimary: Colors.blue, // Text and icon color
+                                  // Action Buttons (Edit and Delete)
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Edit Button
+                                      SizedBox(
+                                        width: 100,
+                                        height: 40, // Set width for the button
+                                        child: ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors
+                                                .white, // Button background color
+                                            onPrimary: Colors
+                                                .blue, // Text and icon color
                                             elevation: 3, // Add shadow
-          shadowColor: Colors.blueAccent.withOpacity(1), // Shadow color with opacity
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10), // Rounded corners
-          ),
-          //side: BorderSide(color: Colors.blueAccent, width: 1), // Border style
-          padding: const EdgeInsets.symmetric(vertical: 12), // Padding inside the button
-        ),
-        onPressed: () async {
-          final result = await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return DeliveryboyModal(
-                isEditing: true,
-                deliveryboy: deliveryboy,
-                deliveryboyId: deliveryboy['DeliveryBoyID'].toString(),
-              );
-            },
-          );
-          if (result == true) {
-            _fetchDeliveryboy();
-          }
-        },
-        icon: Icon(Icons.edit, size: 18), // Icon for the button
-        label: Text(
-          'Edit',
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-      ),
-    ),
-    const SizedBox(width: 20), // Space between buttons
+                                            shadowColor: Colors.blueAccent
+                                                .withOpacity(
+                                                    1), // Shadow color with opacity
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      10), // Rounded corners
+                                            ),
+                                            //side: BorderSide(color: Colors.blueAccent, width: 1), // Border style
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical:
+                                                    12), // Padding inside the button
+                                          ),
+                                          onPressed: () async {
+                                            final result = await showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return DeliveryboyModal(
+                                                  isEditing: true,
+                                                  deliveryboy: deliveryboy,
+                                                  deliveryboyId: deliveryboy[
+                                                          'DeliveryBoyID']
+                                                      .toString(),
+                                                );
+                                              },
+                                            );
+                                            if (result == true) {
+                                              _fetchDeliveryboy();
+                                            }
+                                          },
+                                          icon: Icon(Icons.edit,
+                                              size: 18), // Icon for the button
+                                          label: Text(
+                                            'Edit',
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                          width: 20), // Space between buttons
 
-    // Delete Button
+                                      // Delete Button
                                       if (!shouldHideDeleteButton)
-    SizedBox(
-      width: 100,
-      height: 40, // Set width for the button
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          primary: Colors.white, // Button background color
-          onPrimary: Colors.red, // Text and icon color
+                                        SizedBox(
+                                          width: 100,
+                                          height:
+                                              40, // Set width for the button
+                                          child: ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors
+                                                  .white, // Button background color
+                                              onPrimary: Colors
+                                                  .red, // Text and icon color
                                               elevation: 3, // Add shadow
-          shadowColor: Colors.redAccent.withOpacity(1), // Shadow color with opacity
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10), // Rounded corners
-          ),
-          //side: BorderSide(color: Colors.redAccent, width: 1), // Border style
-          padding: const EdgeInsets.symmetric(vertical: 12), // Padding inside the button
-        ),
-        onPressed: () async {
-          final bool? confirmDelete = await _showDeleteConfirmationDialog(context);
-          if (confirmDelete == true) {
-            final deliveryboyId = deliveryboy['DeliveryBoyID'].toString();
-            final success = await AuthService().deleteDeliveryboy(deliveryboyId);
-            if (success) {
-              
-
+                                              shadowColor: Colors.redAccent
+                                                  .withOpacity(
+                                                      1), // Shadow color with opacity
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        10), // Rounded corners
+                                              ),
+                                              //side: BorderSide(color: Colors.redAccent, width: 1), // Border style
+                                              padding: const EdgeInsets
+                                                      .symmetric(
+                                                  vertical:
+                                                      12), // Padding inside the button
+                                            ),
+                                            onPressed: () async {
+                                              final bool? confirmDelete =
+                                                  await _showDeleteConfirmationDialog(
+                                                      context);
+                                              if (confirmDelete == true) {
+                                                final deliveryboyId =
+                                                    deliveryboy['DeliveryBoyID']
+                                                        .toString();
+                                                final success =
+                                                    await AuthService()
+                                                        .deleteDeliveryboy(
+                                                            deliveryboyId);
+                                                if (success) {
                                                   Fluttertoast.showToast(
                                                     msg:
                                                         'Delivery Boy deleted successfully',
@@ -451,17 +553,22 @@ int get totalPages {
                                                     textColor: Colors.white,
                                                     fontSize: 16.0,
                                                   );
-              _fetchDeliveryboy();
+                                                  _fetchDeliveryboy();
 
-              
-                 // Remove the deleted admin from both lists and update state
-      setState(() {
-        deliveryboys.removeWhere((element) => element['DeliveryBoyID'].toString() == deliveryboyId);
-        filteredDeliveryboys.removeWhere((element) => element['DeliveryBoyID'].toString() == deliveryboyId);
-      });
-            } else {
-             
-
+                                                  // Remove the deleted admin from both lists and update state
+                                                  setState(() {
+                                                    deliveryboys.removeWhere(
+                                                        (element) =>
+                                                            element['DeliveryBoyID']
+                                                                .toString() ==
+                                                            deliveryboyId);
+                                                    filteredDeliveryboys
+                                                        .removeWhere((element) =>
+                                                            element['DeliveryBoyID']
+                                                                .toString() ==
+                                                            deliveryboyId);
+                                                  });
+                                                } else {
                                                   Fluttertoast.showToast(
                                                     msg:
                                                         'Failed to delete Delivery Boy',
@@ -474,153 +581,168 @@ int get totalPages {
                                                     textColor: Colors.white,
                                                     fontSize: 16.0,
                                                   );
-            }
-          }
-        },
-        icon: Icon(Icons.delete, size: 18), // Icon for the button
-        label: Text(
-          'Delete',
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-      ),
-    ),
-  ],
-),
-
-
-
-      ],
-    ),
-  ),
-)
-
-
-
-);
-
-
+                                                }
+                                              }
+                                            },
+                                            icon: Icon(Icons.delete,
+                                                size:
+                                                    18), // Icon for the button
+                                            label: Text(
+                                              'Delete',
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ));
                     },
                   ),
                 ),
                 // Pagination Controls
                 Row(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    // Back Button
-    IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: _currentPage > 0
-          ? () {
-              setState(() {
-                // Move to the previous chunk of pages (e.g., 0-4 to 5-9)
-                if (_currentPage % 5 == 0) {
-                  _currentPage -= 5;
-                } else {
-                  _currentPage--;
-                }
-              });
-            }
-          : null, // Disable if on the first page
-    ),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Back Button
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: _currentPage > 0
+                          ? () {
+                              setState(() {
+                                // Move to the previous chunk of pages (e.g., 0-4 to 5-9)
+                                if (_currentPage % 5 == 0) {
+                                  _currentPage -= 5;
+                                } else {
+                                  _currentPage--;
+                                }
+                              });
+                            }
+                          : null, // Disable if on the first page
+                    ),
 
-    // Scrollable List of Page Numbers
-    SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          // Calculate the total pages based on filtered or all data
-          Builder(
-            builder: (context) {
-              int totalPages = (((_searchQuery.isEmpty ? deliveryboys.length : filteredDeliveryboys.length) - 1) / _itemsPerPage).ceil();
-              
-              // Calculate remaining pages
-              int remainingPages = totalPages - _currentPage;
+                    // Scrollable List of Page Numbers
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          // Calculate the total pages based on filtered or all data
+                          Builder(
+                            builder: (context) {
+                              int totalPages = (((_searchQuery.isEmpty
+                                              ? deliveryboys.length
+                                              : filteredDeliveryboys.length) -
+                                          1) /
+                                      _itemsPerPage)
+                                  .ceil();
 
-              // Determine the chunk size (5 pages at a time, but adjust for remaining pages)
-              int chunkSize = remainingPages < 5 ? remainingPages : 5;
+                              // Calculate remaining pages
+                              int remainingPages = totalPages - _currentPage;
 
-              // Generate the visible pages (show pages in chunks of 5 or remaining pages)
-              return Row(
-                children: List.generate(
-                  chunkSize,
-                  (index) {
-                    // Determine which page to show based on the current chunk
-                    int pageToShow = _currentPage + index;
+                              // Determine the chunk size (5 pages at a time, but adjust for remaining pages)
+                              int chunkSize =
+                                  remainingPages < 5 ? remainingPages : 5;
 
-                    // Ensure the page number is within the valid range
-                    if (pageToShow < totalPages) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _currentPage = pageToShow;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                            decoration: BoxDecoration(
-                              color: _currentPage == pageToShow
-                                  ? Colors.blue
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                color: _currentPage == pageToShow
-                                    ? Colors.blue
-                                    : Colors.grey.withOpacity(0.5),
-                              ),
-                            ),
-                            child: Text(
-                              (pageToShow + 1).toString(),
-                              style: TextStyle(
-                                color: _currentPage == pageToShow
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
+                              // Generate the visible pages (show pages in chunks of 5 or remaining pages)
+                              return Row(
+                                children: List.generate(
+                                  chunkSize,
+                                  (index) {
+                                    // Determine which page to show based on the current chunk
+                                    int pageToShow = _currentPage + index;
+
+                                    // Ensure the page number is within the valid range
+                                    if (pageToShow < totalPages) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _currentPage = pageToShow;
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 4.0, horizontal: 8.0),
+                                            decoration: BoxDecoration(
+                                              color: _currentPage == pageToShow
+                                                  ? Theme.of(context)
+                                                      .primaryColor
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              border: Border.all(
+                                                color:
+                                                    _currentPage == pageToShow
+                                                        ? Theme.of(context)
+                                                            .primaryColor
+                                                        : Theme.of(context)
+                                                            .dividerColor,
+                                              ),
+                                            ),
+                                            child: Text(
+                                              (pageToShow + 1).toString(),
+                                              style: TextStyle(
+                                                color:
+                                                    _currentPage == pageToShow
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary
+                                                        : Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    return Container(); // Skip out-of-range pages
+                                  },
+                                ).toList(),
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    }
-                    return Container(); // Skip out-of-range pages
-                  },
-                ).toList(),
-              );
-            },
-          ),
-        ],
-      ),
-    ),
+                        ],
+                      ),
+                    ),
 
-    // Forward Button
-    IconButton(
-      icon: const Icon(Icons.arrow_forward),
-      onPressed: _currentPage <
-              (((_searchQuery.isEmpty ? deliveryboys.length : filteredDeliveryboys.length) - 1) / _itemsPerPage)
-                  .ceil() - 1
-          ? () {
-              setState(() {
-                // Move to the next chunk of pages (e.g., 5-9 to 10-14)
-                if ((_currentPage + 1) % 5 == 0) {
-                  _currentPage += 5;
-                } else {
-                  _currentPage++;
-                }
-              });
-            }
-          : null, // Disable if on the last page
-    ),
-  ],
-)
-
-
-
+                    // Forward Button
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: _currentPage <
+                              (((_searchQuery.isEmpty
+                                                  ? deliveryboys.length
+                                                  : filteredDeliveryboys
+                                                      .length) -
+                                              1) /
+                                          _itemsPerPage)
+                                      .ceil() -
+                                  1
+                          ? () {
+                              setState(() {
+                                // Move to the next chunk of pages (e.g., 5-9 to 10-14)
+                                if ((_currentPage + 1) % 5 == 0) {
+                                  _currentPage += 5;
+                                } else {
+                                  _currentPage++;
+                                }
+                              });
+                            }
+                          : null, // Disable if on the last page
+                    ),
+                  ],
+                )
 
 // Row(
 //   mainAxisAlignment: MainAxisAlignment.center,
 //   children: [
 
-    
 //     IconButton(
 //       icon: const Icon(Icons.arrow_back),
 //       onPressed: _currentPage > 0
@@ -638,16 +760,16 @@ int get totalPages {
 //               padding: EdgeInsets.all(8),
 //               margin: EdgeInsets.symmetric(horizontal: 4),
 //               decoration: BoxDecoration(
-//                 color: _currentPage == index 
-//                     ? Colors.blue 
+//                 color: _currentPage == index
+//                     ? Colors.blue
 //                     : Colors.transparent,
 //                 borderRadius: BorderRadius.circular(8),
 //               ),
 //               child: Text(
 //                 '${index + 1}',
 //                 style: TextStyle(
-//                   color: _currentPage == index 
-//                       ? Colors.white 
+//                   color: _currentPage == index
+//                       ? Colors.white
 //                       : Colors.black,
 //                 ),
 //               ),
@@ -669,31 +791,29 @@ int get totalPages {
           }
         },
       ),
-      
-
-
-         
- floatingActionButton: SafeArea(
-  child: Padding(
-    padding: const EdgeInsets.only(bottom: 30), // Adjust for upward movement
-    child: FloatingActionButton(
-      tooltip: 'Add New Delivery Boy',
-      onPressed: () async {
-        final result = await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return DeliveryboyModal(isEditing: false);
-          },
-        );
-        if (result == true) {
-          _fetchDeliveryboy();
-        }
-      },
-      child: const Icon(Icons.add),
-    ),
-  ),
-),
-floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: SafeArea(
+        child: Padding(
+          padding:
+              const EdgeInsets.only(bottom: 30), // Adjust for upward movement
+          child: FloatingActionButton(
+            backgroundColor: Colors.blue,
+            tooltip: 'Add New Delivery Boy',
+            onPressed: () async {
+              final result = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return DeliveryboyModal(isEditing: false);
+                },
+              );
+              if (result == true) {
+                _fetchDeliveryboy();
+              }
+            },
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 

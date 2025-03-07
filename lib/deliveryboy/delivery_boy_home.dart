@@ -392,24 +392,36 @@ return Scaffold(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.centerRight, // Move to the right
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 24,
-                    width: 200,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Text('Current Range Statistics',
-                  style: TextStyle(
+              Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceBetween, // Aligns both items in one line
+                children: [
+                  Text(
+                    'Current Range Stats',
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[300])),
+                      color: Colors.grey[300],
+                    ),
+                  ),
+                  Shimmer.fromColors(
+                    baseColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[800]! // Dark grey for dark mode
+                        : Colors.grey[300]!, // Light grey for light mode
+                    highlightColor: Theme.of(context).brightness ==
+                            Brightness.dark
+                        ? Colors.grey[
+                            700]! // Slightly lighter dark grey for dark mode
+                        : Colors.grey[100]!, // Slightly lig
+                    child: Container(
+                      height: 30,
+                      width: 120,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+),
+
               SizedBox(height: 16),
               GridView.builder(
                 physics: NeverScrollableScrollPhysics(),
@@ -423,8 +435,14 @@ return Scaffold(
                 itemCount: 6,
                 itemBuilder: (context, index) {
                   return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
+                    baseColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[800]! // Dark grey for dark mode
+                        : Colors.grey[300]!, // Light grey for light mode
+                    highlightColor: Theme.of(context).brightness ==
+                            Brightness.dark
+                        ? Colors.grey[
+                            700]! // Slightly lighter dark grey for dark mode
+                        : Colors.grey[100]!, // Slightly lig
                     child: Container(
                       height: 80,
                       decoration: BoxDecoration(
@@ -531,7 +549,7 @@ return Scaffold(
                               filter,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.black87, // Text color
+                                //  color: Colors.black87, // Text color
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

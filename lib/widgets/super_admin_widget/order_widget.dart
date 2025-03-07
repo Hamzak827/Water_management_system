@@ -176,20 +176,37 @@ final totalItems = _searchQuery.isEmpty
                     Expanded(
                       child: SingleChildScrollView(
                         child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Column(
-                    children: List.generate(4, (index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Container(
-                          width: double.infinity,
-                          height: 150,
-                          color: Colors.white,
-                        ),
-                      );
-                    }),
-                  ),
+                          baseColor: Theme.of(context).brightness ==
+                                  Brightness.dark
+                              ? Colors.grey[800]! // Dark grey for dark mode
+                              : Colors.grey[300]!, // Light grey for light mode
+                          highlightColor: Theme.of(context).brightness ==
+                                  Brightness.dark
+                              ? Colors.grey[
+                                  700]! // Slightly lighter dark grey for dark mode
+                              : Colors.grey[
+                                  100]!, // Slightly lighter grey for light mode
+                          child: Column(
+                            children: List.generate(4, (index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 240,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.grey[
+                                            900]! // Dark background for dark mode
+                                        : Colors.white,
+                                  ),
+                                  // White background for light mode
+                                ),
+                              );
+                            }),
+                          ),
                         ),
                       ),
                     )

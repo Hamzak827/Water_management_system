@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:water_management_system/login_screen.dart';
@@ -22,7 +23,10 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _navigateToNextScreen();
+    
   }
+
+  
 
   Future<void> _navigateToNextScreen() async {
     // Simulate a delay (e.g., 2 seconds for the splash screen)

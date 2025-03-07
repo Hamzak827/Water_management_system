@@ -59,7 +59,7 @@ static final ThemeData darkTheme = ThemeData(
       primary: AppColors.darkPrimaryColor,
       secondary: AppColors.lightBackgroundColor,
       background: AppColors.darkBackgroundColor,
-        surface: AppColors.darkCardColor
+        surface: const Color.fromRGBO(69, 68, 68, 1)
     ),
     scaffoldBackgroundColor: AppColors.darkBackgroundColor,
     textTheme: TextTheme(

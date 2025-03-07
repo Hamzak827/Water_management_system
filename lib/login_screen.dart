@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    getFCMToken();
   }
 
   @override
@@ -41,6 +43,11 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
     });
   }
 
+void getFCMToken() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    String? fcmtoken = await messaging.getToken();
+    print("FCM Token: $fcmtoken"); // Store this token for sending notifications
+  }
   void _login() async {
     setState(() {
       _isLoginButtonClicked = true; // Set login button clicked to true
@@ -60,14 +67,22 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
         _passwordController.text.trim(),
       );
 
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+   
+
+
       final String role = data['role'];
       final String token = data['token'];
       final String? deliveryBoyId = data['DeliveryBoyID']?.toString();
       final String? customerId = data['Profile']?['CustomerID']?.toString();
+      final String? fcmtoken = await messaging.getToken();
+      print("FCM Token: $fcmtoken");
 
       // Login successful, update state using Provider
       await Provider.of<AuthProvider>(context, listen: false).login(token, role,
-          deliveryboyId: deliveryBoyId, customerId: customerId);
+          deliveryboyId: deliveryBoyId,
+          customerId: customerId,
+          fcmtoken: fcmtoken);
 
       // Navigate to the appropriate screen based on the role
       if (role == 'super-admin') {

@@ -282,14 +282,14 @@ void _showUnusedTokensDialog(Map<String, dynamic> token) {
             "$label ",
             style: GoogleFonts.sourceCodePro(
                 fontSize: 14,
-                color: Colors.black87,
+               
                 fontWeight: FontWeight.w600),
           ),
           Expanded(
             child: Text(
               value ?? 'N/A',
               style: GoogleFonts.sourceCodePro(
-                  fontSize: 14, color: Colors.black54),
+                  fontSize: 14, color: Color.fromARGB(255, 196, 196, 191)),
             ),
           ),
         ],
@@ -393,19 +393,18 @@ void _showUnusedTokensDialog(Map<String, dynamic> token) {
                           borderRadius: BorderRadius.circular(10),
                           border: Border(
                             top: BorderSide(
-                                color: Colors.black,
-                                width: 1), // Normal border on top
+                                color: Colors.grey, width: 1), // Top border
                             left: BorderSide(
-                                color: Colors.black,
-                                width: 1), // Normal border on left
+                                color: Colors
+                                    .grey, // Uses the theme's default border color
+
+                                width: 1), // Left border
                             right: BorderSide(
-                                color: Colors.black,
-                                width:
-                                    2), // Thicker border on the right for 3D effect
+                                color: Colors.grey, width: 2), // Right border
                             bottom: BorderSide(
-                                color: Colors.black,
+                                color: Colors.grey,
                                 width:
-                                    2), // Thicker border on the bottom for 3D effect
+                                    2), // B// Thicker border on the bottom for 3D effect
                           ),
                           boxShadow: [
                             BoxShadow(
@@ -417,7 +416,7 @@ void _showUnusedTokensDialog(Map<String, dynamic> token) {
                           ],
                         ),
                         child: Card(
-                          color: Color(0xFFFCFCF7),
+                         
                           
                           margin: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
@@ -436,7 +435,7 @@ void _showUnusedTokensDialog(Map<String, dynamic> token) {
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 22,
-                                    color: Colors.black87,
+                                   
                                   ),
                                 ),
                                 SizedBox(height: 8),
@@ -774,16 +773,18 @@ Wrap(
                                                 vertical: 4.0, horizontal: 8.0),
                                             decoration: BoxDecoration(
                                               color: _currentPage == pageToShow
-                                                  ? Colors.blue
+                                                  ? Theme.of(context)
+                                                      .primaryColor
                                                   : Colors.transparent,
                                               borderRadius:
                                                   BorderRadius.circular(8.0),
                                               border: Border.all(
                                                 color:
                                                     _currentPage == pageToShow
-                                                        ? Colors.blue
-                                                        : Colors.grey
-                                                            .withOpacity(0.5),
+                                                        ? Theme.of(context)
+                                                            .primaryColor
+                                                        : Theme.of(context)
+                                                            .dividerColor,
                                               ),
                                             ),
                                             child: Text(
@@ -791,8 +792,12 @@ Wrap(
                                               style: TextStyle(
                                                 color:
                                                     _currentPage == pageToShow
-                                                        ? Colors.white
-                                                        : Colors.black,
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary
+                                                        : Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurface,
                                               ),
                                             ),
                                           ),
@@ -840,6 +845,7 @@ Wrap(
           padding:
               const EdgeInsets.only(bottom: 30), // Adjust for upward movement
           child: FloatingActionButton(
+            backgroundColor: Colors.blue,
             tooltip: 'Add New Token',
             onPressed: () async {
               final result = await showDialog(
@@ -855,7 +861,10 @@ Wrap(
                 _fetchCustomers();
               }
             },
-            child: const Icon(Icons.add),
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

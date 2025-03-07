@@ -160,7 +160,10 @@ Widget build(BuildContext context) {
                   height: 40.0,
                   child: ElevatedButton(
                     onPressed: _submitCustomer,
-                    child: Text(widget.isEditing ? 'Save Changes' : 'Add Delivery Boy'),
+                      child: Text(
+                        widget.isEditing ? 'Save Changes' : 'Add Delivery Boy',
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
@@ -199,9 +202,15 @@ Widget build(BuildContext context) {
       obscureText: isPassword,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.grey),
+          labelStyle: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white
+                  : Colors.grey,
+              fontWeight: FontWeight.w700),
         filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[400]
+              : Colors.grey[300],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide.none,
