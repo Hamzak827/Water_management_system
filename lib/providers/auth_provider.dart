@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert'; // For json decoding
 import 'package:http/http.dart' as http;
+import 'package:water_management_system/services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
   String _role = '';
@@ -18,6 +19,7 @@ class AuthProvider with ChangeNotifier {
   String get deliveryboyId => _deliveryboyId;
   String get customerId => _customerId;
   String get fcmtoken => _fcmtoken;
+  final AuthService _authService = AuthService();
 
   Future<void> login(String token, String role,
       {String? deliveryboyId, String? customerId, String? fcmtoken}) async {
@@ -59,8 +61,41 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Future<void> logout() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   await prefs.remove('isLoggedIn');
+  //   await prefs.remove('role');
+  //   await prefs.remove('token');
+  //   await prefs.remove('DeliveryBoyID');
+  //   await prefs.remove('CustomerID');
+  //   await prefs.remove('fcmToken');
+
+  //   _isLoggedIn = false;
+  //   _role = '';
+  //   _token = '';
+  //   _deliveryboyId = '';
+  //   _customerId = '';
+  //   _fcmtoken = '';
+
+  //   notifyListeners();
+  // }
+
+
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+  
+    // Retrieve stored values
+    String? token = prefs.getString('token');
+    String? role = prefs.getString('role');
+    String? customerId = prefs.getString('CustomerID');
+    String? deliveryBoyId = prefs.getString('DeliveryBoyID');
+    String? fcmToken = prefs.getString('fcmToken');
+
+    // Call API to delete device token
+    await _authService.deleteDeviceTokenFromServer(
+        token, role, customerId, deliveryBoyId, fcmToken);
+
+    // Clear stored values
     await prefs.remove('isLoggedIn');
     await prefs.remove('role');
     await prefs.remove('token');

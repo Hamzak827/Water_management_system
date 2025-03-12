@@ -123,6 +123,58 @@ Future<void> sendDeviceTokenToServer(
 
 
 
+
+
+
+  Future<void> deleteDeviceTokenFromServer(
+    String? authToken,
+    String? role,
+    String? customerId,
+    String? deliveryBoyId,
+    String? fcmToken,
+  ) async {
+    if (authToken == null || fcmToken == null) {
+      print("Auth token or FCM token is null. Skipping deletion.");
+      return;
+    }
+
+    String? url;
+
+    if (role == 'customer' && customerId != null) {
+      url = '$baseUrl/customers/$customerId/deviceToken';
+    } else if (role == 'deliveryboy' && deliveryBoyId != null) {
+      url = '$baseUrl/delieveryboy/$deliveryBoyId/deviceToken';
+    }
+
+    if (url != null) {
+      try {
+        final response = await http.delete(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $authToken',
+          },
+          body: json.encode({'deviceToken': fcmToken}),
+        );
+
+        print('Device token delete response status: ${response.statusCode}');
+        print("URL being called for FCM deletion: $url");
+
+        if (response.statusCode == 200) {
+          print("Device token successfully deleted from the server.");
+        } else {
+          print("Failed to delete device token. Response: ${response.body}");
+        }
+      } catch (e) {
+        print("Error deleting device token: $e");
+      }
+    } else {
+      print("No valid role or ID found for deleting device token.");
+    }
+  }
+
+
+
   
 
 //////////////////////////////////////// Super Admin Home Screen //////////////////////////////////////////////////////

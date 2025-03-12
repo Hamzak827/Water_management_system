@@ -6,14 +6,17 @@ import 'package:water_management_system/main.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class PushNotifications {
-  static final _firebaseMessaging = FirebaseMessaging.instance;
+  static final FirebaseMessaging _firebaseMessaging =
+      FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-  // Request notification permissions for Firebase Messaging
+  static const String vapidKey =
+      "BP4Jjmmxp_pjY26cUEHRUq489pY9il2_tHvFePfIA8ADfT8Dgwgi88-4yKQzeaxtqR8DoWITVaF5_wRRdIC1z1s";
+
   static Future<void> init() async {
-    // Request notification permissions (FirebaseMessaging handles this for Android 13+)
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    // Request permissions
+    final settings = await _firebaseMessaging.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -23,82 +26,70 @@ class PushNotifications {
       sound: true,
     );
 
-    print("Notification permissions: ${settings.authorizationStatus}");
-
-    // Get the device's FCM token
-    final token = await _firebaseMessaging.getToken();
-    print("Device token: $token");
+    // Get and handle FCM token with VAPID key
+    try {
+      final token = await _firebaseMessaging.getToken(vapidKey: vapidKey);
+      print("FCM Token: $token");
+      // Store or send token to your server here
+    } catch (e) {
+      print("Error getting FCM token: $e");
+    }
   }
 
-  // Initialize local notifications
   static Future<void> localNotiInit() async {
-    // Android settings
-    const AndroidInitializationSettings initializationSettingsAndroid =
+    const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS settings
-    const DarwinInitializationSettings initializationSettingsDarwin =
+    const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings(
       onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
     );
 
-    // Linux settings (optional)
-    const LinuxInitializationSettings initializationSettingsLinux =
-        LinuxInitializationSettings(defaultActionName: 'Open Notification');
-
-    // Combine all platform settings
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-      linux: initializationSettingsLinux,
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
     );
 
-    // Initialize the plugin
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onNotificationTap,
-      onDidReceiveBackgroundNotificationResponse: _onNotificationTap,
     );
-
-    print("Local Notifications Initialized");
   }
 
-  // Callback for foreground notifications on iOS
   static void _onDidReceiveLocalNotification(
       int id, String? title, String? body, String? payload) {
-    print("Received local notification: $title, $body");
-    // Add custom behavior here if needed (e.g., show a dialog)
+    print("Received local notification: $title");
   }
 
-  // Callback when a local notification is tapped
-  static void _onNotificationTap(NotificationResponse notificationResponse) {
-    print("Notification tapped: ${notificationResponse.payload}");
-    
+  static void _onNotificationTap(NotificationResponse response) {
+    print("Notification tapped: ${response.payload}");
+    // navigatorKey.currentState?.pushNamed("/notifications");
   }
 
-  //show a simple notification
- static Future showSimpleNotification({
-  required String title,
-  required String body,
-  required String payload,
-}) async {
-  int notificationId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  static Future showSimpleNotification({
+    required String title,
+    required String body,
+    required String payload,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'channel_id',
+      'Channel Name',
+      channelDescription: 'Channel Description',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
 
-  const AndroidNotificationDetails androidNotificationDetails =
-      AndroidNotificationDetails(
-    'Your Channel id',
-    'Your Channel Name',
-    channelDescription: 'Your Channel Description',
-    importance: Importance.max,
-    priority: Priority.high,
-    ticker: 'ticker',
-  );
+    const NotificationDetails platformDetails =
+        NotificationDetails(android: androidDetails);
 
-  const NotificationDetails notificationDetails =
-      NotificationDetails(android: androidNotificationDetails);
-
-  await _flutterLocalNotificationsPlugin.show(
-      notificationId, title, body, notificationDetails, payload: payload);
-}
-
+    await _flutterLocalNotificationsPlugin.show(
+      DateTime.now().millisecondsSinceEpoch % 100000,
+      title,
+      body,
+      platformDetails,
+      payload: payload,
+    );
+  }
 }

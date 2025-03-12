@@ -11,52 +11,32 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-//function listen to background changes
+// Background message handler
 Future _firebaseBackgroundMessage(RemoteMessage message) async {
   if (message.notification != null) {
-    print("Some Notification Received in background ....");
+    print("Background notification received");
   }
 }
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+
+  
   await Firebase.initializeApp();
+  
 
-  //Initialize Firebase Messaging
   await PushNotifications.init();
-
-  //Initialize Local Notification
   await PushNotifications.localNotiInit();
 
-  //Listen to background Notification
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessage);
+  FirebaseMessaging.onMessageOpenedApp.listen(_handleMessageOpened);
+  FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-  //On background Notification Tap
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    if (message.notification != null) {
-      print("Background Notification Tapped");
-      navigatorKey.currentState!.pushNamed("./message", arguments: message);
-    }
-  });
-
-  //To handle foreground Notification
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    String payloadData = jsonEncode(message.data);
-    print("Got a message in foreground");
-    if (message.notification != null) {
-      PushNotifications.showSimpleNotification(
-          title: message.notification!.title!,
-          body: message.notification!.body!,
-          payload: payloadData);
-    }
-  });
-
-  //For handling in terminated State
   final RemoteMessage? message =
       await FirebaseMessaging.instance.getInitialMessage();
-
   if (message != null) {
-    print("Launched from terminated State");
+    print("App launched from terminated state");
   }
 
   runApp(
@@ -71,6 +51,23 @@ Future<void> main() async {
 }
 
 
+
+void _handleMessageOpened(RemoteMessage message) {
+  print("Notification tapped");
+  navigatorKey.currentState?.pushNamed("/message", arguments: message);
+}
+
+void _handleForegroundMessage(RemoteMessage message) {
+  print("Foreground message received");
+  if (message.notification != null) {
+    PushNotifications.showSimpleNotification(
+      title: message.notification!.title!,
+      body: message.notification!.body!,
+      payload: jsonEncode(message.data),
+    );
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -80,12 +77,11 @@ class MyApp extends StatelessWidget {
       builder: (context, themeNotifier, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Water Management System App',
-          // theme: ThemeData.light(),
-          // darkTheme: ThemeData.dark(),
+          title: 'Water Management System',
           theme: AppThemes.lightTheme,
           darkTheme: AppThemes.darkTheme,
           themeMode: themeNotifier.themeMode,
+          navigatorKey: navigatorKey,
           home: AppNavigator(),
         );
       },

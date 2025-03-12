@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "601500736081",
-    "project_id": "water-management-system-f1a5c",
-    "storage_bucket": "water-management-system-f1a5c.firebasestorage.app"
+    "project_number": "669943765148",
+    "project_id": "waternatificationapp",
+    "storage_bucket": "waternatificationapp.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:601500736081:android:3c2040edd4ae9143953670",
+        "mobilesdk_app_id": "1:669943765148:android:d63014f1fba9ff92473559",
         "android_client_info": {
           "package_name": "com.example.water_management_system"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCjRgaW4grcJ1kzgvMw2KG9x1PAyZ99Mi0"
+          "current_key": "AIzaSyCxoHoVZcX8FQOZwi7tOB5E59QYz3GiPKg"
         }
       ],
       "services": {
